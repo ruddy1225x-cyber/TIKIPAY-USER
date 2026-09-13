@@ -1,6 +1,19 @@
 // ======================================================
-// TIKIPAY AUTH
+// TIKIPAY - AUTH
 // ======================================================
+
+
+// ======================================================
+// CONFIGURACIÓN
+// ======================================================
+
+const TIKIPAY_PAGES = {
+  dashboard: "dashboard.html",
+  login: "login.html",
+  register: "registro.html",
+  recovery: "recuperar.html",
+  security: "seguridad.html"
+};
 
 
 // ======================================================
@@ -9,9 +22,13 @@
 
 async function handleIndexPage() {
 
+  const pathname =
+    window.location.pathname;
+
   const isIndex =
-    location.pathname.endsWith("/") ||
-    location.pathname.endsWith("index.html");
+    pathname.endsWith("/") ||
+    pathname.endsWith("/index.html") ||
+    pathname.endsWith("index.html");
 
 
   if (!isIndex) {
@@ -19,30 +36,47 @@ async function handleIndexPage() {
   }
 
 
-  const session =
-    await getCurrentSession();
+  try {
+
+    const session =
+      await getCurrentSession();
 
 
-  setTimeout(
-    () => {
+    setTimeout(
+      () => {
 
-      if (session) {
+        if (session) {
 
-        window.location.replace(
-          "dashboard.html"
-        );
+          window.location.replace(
+            TIKIPAY_PAGES.dashboard
+          );
 
-      } else {
+        } else {
 
-        window.location.replace(
-          "login.html"
-        );
+          window.location.replace(
+            TIKIPAY_PAGES.login
+          );
 
-      }
+        }
 
-    },
-    700
-  );
+      },
+      350
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Error verificando sesión:",
+      error
+    );
+
+
+    window.location.replace(
+      TIKIPAY_PAGES.login
+    );
+
+  }
+
 }
 
 
@@ -65,40 +99,30 @@ if (registerForm) {
       event.preventDefault();
 
 
-      const fullName =
-        document
-          .getElementById("fullName")
-          .value
-          .trim();
+      const fullNameInput =
+        document.getElementById(
+          "fullName"
+        );
 
+      const emailInput =
+        document.getElementById(
+          "email"
+        );
 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim()
-          .toLowerCase();
+      const passwordInput =
+        document.getElementById(
+          "password"
+        );
 
-
-      const password =
-        document
-          .getElementById("password")
-          .value;
-
-
-      const confirmPassword =
-        document
-          .getElementById(
-            "confirmPassword"
-          )
-          .value;
-
+      const confirmPasswordInput =
+        document.getElementById(
+          "confirmPassword"
+        );
 
       const terms =
         document.getElementById(
           "acceptTerms"
         );
-
 
       const message =
         document.getElementById(
@@ -106,7 +130,34 @@ if (registerForm) {
         );
 
 
-      if (fullName.length < 3) {
+      const fullName =
+        fullNameInput
+          ?.value
+          .trim() || "";
+
+      const email =
+        emailInput
+          ?.value
+          .trim()
+          .toLowerCase() || "";
+
+      const password =
+        passwordInput
+          ?.value || "";
+
+      const confirmPassword =
+        confirmPasswordInput
+          ?.value || "";
+
+
+      // --------------------------------------------------
+      // VALIDACIONES
+      // --------------------------------------------------
+
+      if (
+        fullName.length <
+        3
+      ) {
 
         showAuthMessage(
           message,
@@ -118,7 +169,24 @@ if (registerForm) {
       }
 
 
-      if (password.length < 8) {
+      if (
+        !isValidEmail(email)
+      ) {
+
+        showAuthMessage(
+          message,
+          "Escribe un correo electrónico válido.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (
+        password.length <
+        8
+      ) {
 
         showAuthMessage(
           message,
@@ -160,6 +228,13 @@ if (registerForm) {
       }
 
 
+      setFormBusy(
+        registerForm,
+        true,
+        "Creando cuenta..."
+      );
+
+
       showAuthMessage(
         message,
         "Creando tu cuenta...",
@@ -167,68 +242,121 @@ if (registerForm) {
       );
 
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .auth
-          .signUp(
-            {
+      try {
+
+        // --------------------------------------------------
+        // URL DE CONFIRMACIÓN
+        // Funciona en localhost y Vercel
+        // --------------------------------------------------
+
+        const emailRedirectTo =
+          `${window.location.origin}/login.html?confirmed=1`;
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .auth
+            .signUp({
               email,
               password,
 
               options: {
+
                 data: {
                   full_name:
                     fullName
-                }
+                },
+
+                emailRedirectTo:
+                  emailRedirectTo
+
               }
-            }
+
+            });
+
+
+        if (error) {
+
+          showAuthMessage(
+            message,
+            translateAuthError(
+              error.message
+            ),
+            "error"
+          );
+
+          return;
+        }
+
+
+        // --------------------------------------------------
+        // SI CONFIRM EMAIL ESTÁ DESACTIVADO
+        // Supabase devuelve sesión inmediatamente
+        // --------------------------------------------------
+
+        if (
+          data?.session
+        ) {
+
+          showAuthMessage(
+            message,
+            "Cuenta creada correctamente. Iniciando sesión...",
+            "success"
           );
 
 
-      if (error) {
+          setTimeout(
+            () => {
+
+              window.location.replace(
+                TIKIPAY_PAGES.dashboard
+              );
+
+            },
+            1000
+          );
+
+
+          return;
+        }
+
+
+        // --------------------------------------------------
+        // CONFIRM EMAIL ACTIVADO
+        // --------------------------------------------------
 
         showAuthMessage(
           message,
-          translateAuthError(
-            error.message
-          ),
+          "Cuenta creada. Te enviamos un correo de verificación. Revisa tu bandeja de entrada y confirma tu cuenta antes de iniciar sesión.",
+          "success"
+        );
+
+
+        registerForm.reset();
+
+
+      } catch (error) {
+
+        console.error(
+          "Error durante el registro:",
+          error
+        );
+
+
+        showAuthMessage(
+          message,
+          "No se pudo crear la cuenta. Inténtalo nuevamente.",
           "error"
         );
 
-        return;
-      }
+      } finally {
 
-
-      if (
-        data.session
-      ) {
-
-        showAuthMessage(
-          message,
-          "Cuenta creada correctamente.",
-          "success"
-        );
-
-
-        setTimeout(
-          () => {
-
-            window.location.href =
-              "dashboard.html";
-
-          },
-          1000
-        );
-
-      } else {
-
-        showAuthMessage(
-          message,
-          "Cuenta creada. Revisa tu correo para confirmar tu cuenta.",
-          "success"
+        setFormBusy(
+          registerForm,
+          false
         );
 
       }
@@ -263,9 +391,9 @@ if (loginForm) {
           .getElementById(
             "loginEmail"
           )
-          .value
+          ?.value
           .trim()
-          .toLowerCase();
+          .toLowerCase() || "";
 
 
       const password =
@@ -273,7 +401,7 @@ if (loginForm) {
           .getElementById(
             "loginPassword"
           )
-          .value;
+          ?.value || "";
 
 
       const message =
@@ -282,180 +410,421 @@ if (loginForm) {
         );
 
 
-      // --------------------------------------
-      // MENSAJE DE CARGA
-      // --------------------------------------
+      if (
+        !email ||
+        !password
+      ) {
+
+        showAuthMessage(
+          message,
+          "Ingresa tu correo y contraseña.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      setFormBusy(
+        loginForm,
+        true,
+        "Verificando..."
+      );
+
 
       showAuthMessage(
         message,
-        "Iniciando sesión...",
+        "Verificando credenciales...",
         ""
       );
 
 
-      // --------------------------------------
-      // LOGIN SUPABASE
-      // --------------------------------------
+      try {
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .auth
-          .signInWithPassword(
-            {
+        // --------------------------------------------------
+        // INICIAR SESIÓN
+        // --------------------------------------------------
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+            .auth
+            .signInWithPassword({
               email,
               password
-            }
+            });
+
+
+        if (error) {
+
+          showAuthMessage(
+            message,
+            translateAuthError(
+              error.message
+            ),
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          !data?.session ||
+          !data?.user
+        ) {
+
+          showAuthMessage(
+            message,
+            "No se pudo iniciar la sesión.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        // --------------------------------------------------
+        // VALIDAR ESTADO DE CUENTA TIKIPAY
+        // --------------------------------------------------
+
+        const {
+          data: account,
+          error: accountError
+        } =
+          await supabaseClient
+            .from(
+              "accounts"
+            )
+            .select(
+              "status"
+            )
+            .eq(
+              "user_id",
+              data.user.id
+            )
+            .single();
+
+
+        if (
+          accountError ||
+          !account
+        ) {
+
+          console.error(
+            "Error validando cuenta:",
+            accountError
           );
 
 
-      // --------------------------------------
-      // ERROR DE LOGIN
-      // --------------------------------------
+          await supabaseClient
+            .auth
+            .signOut();
 
-      if (error) {
+
+          showAuthMessage(
+            message,
+            "No se pudo validar tu cuenta TikiPay.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        // --------------------------------------------------
+        // CUENTAS BLOQUEADAS
+        // --------------------------------------------------
+
+        const blockedStatuses = [
+          "LOGIN_BLOCKED",
+          "SUSPENDED",
+          "CLOSED"
+        ];
+
+
+        if (
+          blockedStatuses.includes(
+            account.status
+          )
+        ) {
+
+          await supabaseClient
+            .auth
+            .signOut();
+
+
+          showAuthMessage(
+            message,
+            "Tu cuenta no está disponible actualmente. Contacta con soporte TikiPay.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        // --------------------------------------------------
+        // LOGIN CORRECTO
+        // --------------------------------------------------
 
         showAuthMessage(
           message,
-          "Correo o contraseña incorrectos.",
-          "error"
+          "Bienvenido a TikiPay.",
+          "success"
         );
 
-        return;
-      }
 
+        setTimeout(
+          () => {
 
-      // --------------------------------------
-      // VERIFICAR SESIÓN
-      // --------------------------------------
+            window.location.replace(
+              TIKIPAY_PAGES.dashboard
+            );
 
-      if (
-        !data ||
-        !data.session ||
-        !data.user
-      ) {
-
-        showAuthMessage(
-          message,
-          "No se pudo iniciar la sesión.",
-          "error"
+          },
+          500
         );
 
-        return;
-      }
 
-
-      // --------------------------------------
-      // CONSULTAR ESTADO DE CUENTA TIKIPAY
-      // --------------------------------------
-
-      const {
-        data: account,
-        error: accountError
-      } =
-        await supabaseClient
-          .from("accounts")
-          .select(
-            "status"
-          )
-          .eq(
-            "user_id",
-            data.user.id
-          )
-          .single();
-
-
-      // --------------------------------------
-      // ERROR VALIDANDO CUENTA
-      // --------------------------------------
-
-      if (
-        accountError ||
-        !account
-      ) {
+      } catch (error) {
 
         console.error(
-          "Error validando cuenta:",
-          accountError
+          "Error iniciando sesión:",
+          error
         );
-
-
-        await supabaseClient
-          .auth
-          .signOut();
 
 
         showAuthMessage(
           message,
-          "No se pudo validar tu cuenta TikiPay.",
+          "No se pudo conectar con TikiPay. Inténtalo nuevamente.",
           "error"
         );
 
-        return;
-      }
+      } finally {
 
-
-      // --------------------------------------
-      // CUENTAS QUE NO PUEDEN INICIAR SESIÓN
-      // --------------------------------------
-
-      if (
-        account.status ===
-          "LOGIN_BLOCKED"
-        ||
-        account.status ===
-          "SUSPENDED"
-        ||
-        account.status ===
-          "CLOSED"
-      ) {
-
-        await supabaseClient
-          .auth
-          .signOut();
-
-
-        showAuthMessage(
-          message,
-          "Tu cuenta no está disponible actualmente.",
-          "error"
+        setFormBusy(
+          loginForm,
+          false
         );
 
-        return;
       }
-
-
-      // --------------------------------------
-      // LOGIN CORRECTO
-      // --------------------------------------
-
-      showAuthMessage(
-        message,
-        "Bienvenido a TikiPay.",
-        "success"
-      );
-
-
-      setTimeout(
-        () => {
-
-          window.location.replace(
-            "dashboard.html"
-          );
-
-        },
-        500
-      );
 
     }
   );
 
 }
 
+
 // ======================================================
-// OJO LOGIN
+// CONFIRMACIÓN DE CORREO
+// ======================================================
+
+function showEmailConfirmationMessage() {
+
+  const currentPage =
+    window.location.pathname
+      .split("/")
+      .pop();
+
+
+  if (
+    currentPage !==
+    "login.html"
+  ) {
+    return;
+  }
+
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const confirmed =
+    params.get(
+      "confirmed"
+    );
+
+
+  if (
+    confirmed !==
+    "1"
+  ) {
+    return;
+  }
+
+
+  const message =
+    document.getElementById(
+      "loginMessage"
+    );
+
+
+  showAuthMessage(
+    message,
+    "Correo verificado correctamente. Ya puedes iniciar sesión en TikiPay.",
+    "success"
+  );
+
+
+  // Limpiar ?confirmed=1 sin recargar
+
+  window.history.replaceState(
+    {},
+    document.title,
+    "login.html"
+  );
+
+}
+
+
+// ======================================================
+// RECUPERACIÓN DE CONTRASEÑA
+// ======================================================
+
+const recoveryForm =
+  document.getElementById(
+    "recoveryForm"
+  );
+
+
+if (recoveryForm) {
+
+  recoveryForm.addEventListener(
+    "submit",
+    async function (event) {
+
+      event.preventDefault();
+
+
+      const email =
+        document
+          .getElementById(
+            "recoveryEmail"
+          )
+          ?.value
+          .trim()
+          .toLowerCase() || "";
+
+
+      const message =
+        document.getElementById(
+          "recoveryMessage"
+        );
+
+
+      if (
+        !isValidEmail(email)
+      ) {
+
+        showAuthMessage(
+          message,
+          "Escribe un correo electrónico válido.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      setFormBusy(
+        recoveryForm,
+        true,
+        "Enviando..."
+      );
+
+
+      showAuthMessage(
+        message,
+        "Enviando recuperación...",
+        ""
+      );
+
+
+      try {
+
+        const redirectTo =
+          `${window.location.origin}/seguridad.html?recovery=1`;
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .auth
+            .resetPasswordForEmail(
+              email,
+              {
+                redirectTo
+              }
+            );
+
+
+        if (error) {
+
+          console.error(
+            "Error recuperación:",
+            error
+          );
+
+
+          showAuthMessage(
+            message,
+            translateAuthError(
+              error.message
+            ),
+            "error"
+          );
+
+          return;
+        }
+
+
+        // Mensaje deliberadamente genérico
+        // para no revelar si un correo existe.
+
+        showAuthMessage(
+          message,
+          "Si el correo está registrado en TikiPay, recibirás instrucciones para cambiar tu contraseña.",
+          "success"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Error de recuperación:",
+          error
+        );
+
+
+        showAuthMessage(
+          message,
+          "No se pudo enviar la recuperación. Inténtalo nuevamente.",
+          "error"
+        );
+
+      } finally {
+
+        setFormBusy(
+          recoveryForm,
+          false
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// OJO - LOGIN
 // ======================================================
 
 const togglePassword =
@@ -482,7 +851,7 @@ if (togglePassword) {
 
 
 // ======================================================
-// OJO REGISTRO
+// OJO - REGISTRO
 // ======================================================
 
 const toggleRegisterPassword =
@@ -510,124 +879,118 @@ if (toggleRegisterPassword) {
 
 
 // ======================================================
-// RECUPERACIÓN
+// OJO - CONFIRMAR CONTRASEÑA
 // ======================================================
 
-const recoveryForm =
+const toggleConfirmPassword =
   document.getElementById(
-    "recoveryForm"
+    "toggleConfirmPassword"
   );
 
 
-if (recoveryForm) {
+if (toggleConfirmPassword) {
 
-  recoveryForm.addEventListener(
-    "submit",
-    async function (event) {
+  toggleConfirmPassword
+    .addEventListener(
+      "click",
+      function () {
 
-      event.preventDefault();
-
-
-      const email =
-        document
-          .getElementById(
-            "recoveryEmail"
-          )
-          .value
-          .trim()
-          .toLowerCase();
-
-
-      const message =
-        document.getElementById(
-          "recoveryMessage"
+        togglePasswordField(
+          "confirmPassword",
+          toggleConfirmPassword
         );
 
-
-      showAuthMessage(
-        message,
-        "Enviando recuperación...",
-        ""
-      );
-
-
-      const redirectTo =
-        new URL(
-          "seguridad.html",
-          window.location.href
-        ).href;
-
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .auth
-          .resetPasswordForEmail(
-            email,
-            {
-              redirectTo
-            }
-          );
-
-
-      if (error) {
-
-        showAuthMessage(
-          message,
-          translateAuthError(
-            error.message
-          ),
-          "error"
-        );
-
-        return;
       }
-
-
-      showAuthMessage(
-        message,
-        "Si el correo existe, recibirás instrucciones para cambiar tu contraseña.",
-        "success"
-      );
-
-    }
-  );
+    );
 
 }
 
 
 // ======================================================
-// SI YA ESTÁ LOGUEADO EN LOGIN/REGISTRO
+// REDIRECCIÓN SI YA EXISTE SESIÓN
 // ======================================================
 
 async function redirectLoggedUser() {
 
   const currentPage =
-    location.pathname
+    window.location.pathname
       .split("/")
       .pop();
 
 
-  if (
-    currentPage !==
-      "login.html" &&
-    currentPage !==
-      "registro.html"
-  ) {
+  const publicAuthPages = [
+    "login.html",
+    "registro.html"
+  ];
 
+
+  if (
+    !publicAuthPages.includes(
+      currentPage
+    )
+  ) {
     return;
   }
 
 
-  const session =
-    await getCurrentSession();
+  try {
+
+    const session =
+      await getCurrentSession();
 
 
-  if (session) {
+    if (!session) {
+      return;
+    }
+
+
+    // Si viene de confirmar email,
+    // permitimos que Supabase termine
+    // de procesar la URL antes de redirigir.
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const confirmed =
+      params.get(
+        "confirmed"
+      );
+
+
+    if (
+      confirmed ===
+      "1"
+    ) {
+
+      setTimeout(
+        () => {
+
+          window.location.replace(
+            TIKIPAY_PAGES.dashboard
+          );
+
+        },
+        1400
+      );
+
+
+      return;
+    }
+
 
     window.location.replace(
-      "dashboard.html"
+      TIKIPAY_PAGES.dashboard
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error verificando sesión:",
+      error
     );
 
   }
@@ -636,7 +999,7 @@ async function redirectLoggedUser() {
 
 
 // ======================================================
-// FUNCIONES
+// CAMBIAR VISIBILIDAD DE CONTRASEÑA
 // ======================================================
 
 function togglePasswordField(
@@ -645,7 +1008,9 @@ function togglePasswordField(
 ) {
 
   const input =
-    document.getElementById(id);
+    document.getElementById(
+      id
+    );
 
 
   if (!input) {
@@ -653,27 +1018,37 @@ function togglePasswordField(
   }
 
 
-  const visible =
-    input.type === "text";
+  const isVisible =
+    input.type ===
+    "text";
 
 
   input.type =
-    visible
+    isVisible
       ? "password"
       : "text";
 
 
-  button.textContent =
-    visible
-      ? "👁"
-      : "🙈";
+  if (button) {
+
+    button.textContent =
+      isVisible
+        ? "👁"
+        : "🙈";
+
+  }
+
 }
 
+
+// ======================================================
+// MOSTRAR MENSAJES
+// ======================================================
 
 function showAuthMessage(
   element,
   text,
-  type
+  type = ""
 ) {
 
   if (!element) {
@@ -692,53 +1067,286 @@ function showAuthMessage(
         ? " " + type
         : ""
     );
+
 }
 
+
+// ======================================================
+// ACTIVAR / DESACTIVAR FORMULARIO
+// ======================================================
+
+function setFormBusy(
+  form,
+  busy,
+  busyText = ""
+) {
+
+  if (!form) {
+    return;
+  }
+
+
+  const button =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+
+  if (!button) {
+    return;
+  }
+
+
+  if (
+    !button.dataset
+      .originalText
+  ) {
+
+    button.dataset.originalText =
+      button.textContent.trim();
+
+  }
+
+
+  button.disabled =
+    busy;
+
+
+  if (busy) {
+
+    if (busyText) {
+
+      button.textContent =
+        busyText;
+
+    }
+
+  } else {
+
+    button.textContent =
+      button.dataset.originalText;
+
+  }
+
+}
+
+
+// ======================================================
+// VALIDAR EMAIL
+// ======================================================
+
+function isValidEmail(
+  email
+) {
+
+  const value =
+    String(
+      email || ""
+    ).trim();
+
+
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    .test(
+      value
+    );
+
+}
+
+
+// ======================================================
+// TRADUCIR ERRORES DE SUPABASE
+// ======================================================
 
 function translateAuthError(
   error
 ) {
 
   const text =
-    String(error).toLowerCase();
+    String(
+      error || ""
+    ).toLowerCase();
 
+
+  // --------------------------------------------------
+  // EMAIL NO CONFIRMADO
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "email not confirmed"
+    )
+  ) {
+
+    return "Debes confirmar tu correo electrónico antes de iniciar sesión.";
+  }
+
+
+  // --------------------------------------------------
+  // LOGIN INCORRECTO
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "invalid login credentials"
+    )
+  ) {
+
+    return "Correo o contraseña incorrectos.";
+  }
+
+
+  // --------------------------------------------------
+  // USUARIO YA EXISTE
+  // --------------------------------------------------
 
   if (
     text.includes(
       "already registered"
     )
+    ||
+    text.includes(
+      "user already registered"
+    )
   ) {
-    return "Ese correo ya está registrado.";
+
+    return "Ese correo ya está registrado en TikiPay.";
   }
 
+
+  // --------------------------------------------------
+  // DEMASIADOS CORREOS
+  // --------------------------------------------------
 
   if (
     text.includes(
-      "password"
+      "email rate limit"
+    )
+    ||
+    text.includes(
+      "over_email_send_rate_limit"
+    )
+    ||
+    text.includes(
+      "rate limit"
     )
   ) {
-    return "La contraseña no cumple los requisitos.";
+
+    return "Se enviaron demasiados correos. Espera un momento e inténtalo nuevamente.";
   }
 
+
+  // --------------------------------------------------
+  // SIGNUP DESACTIVADO
+  // --------------------------------------------------
 
   if (
     text.includes(
-      "email"
+      "signup is disabled"
+    )
+    ||
+    text.includes(
+      "signups not allowed"
     )
   ) {
-    return "Verifica el correo electrónico.";
+
+    return "El registro de nuevos usuarios está temporalmente deshabilitado.";
   }
 
 
-  return (
-    "No se pudo completar la operación."
-  );
+  // --------------------------------------------------
+  // CONTRASEÑA
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "password should be"
+    )
+    ||
+    text.includes(
+      "weak password"
+    )
+  ) {
+
+    return "La contraseña no cumple los requisitos de seguridad.";
+  }
+
+
+  // --------------------------------------------------
+  // SMTP
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "smtp"
+    )
+    ||
+    text.includes(
+      "error sending"
+    )
+    ||
+    text.includes(
+      "unexpected_failure"
+    )
+  ) {
+
+    return "No se pudo enviar el correo. Inténtalo nuevamente en unos momentos.";
+  }
+
+
+  // --------------------------------------------------
+  // EMAIL INVÁLIDO
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "invalid email"
+    )
+  ) {
+
+    return "El correo electrónico no es válido.";
+  }
+
+
+  // --------------------------------------------------
+  // NETWORK
+  // --------------------------------------------------
+
+  if (
+    text.includes(
+      "failed to fetch"
+    )
+    ||
+    text.includes(
+      "network"
+    )
+  ) {
+
+    return "No se pudo conectar con TikiPay. Verifica tu conexión a Internet.";
+  }
+
+
+  // --------------------------------------------------
+  // DEFAULT
+  // --------------------------------------------------
+
+  return "No se pudo completar la operación. Inténtalo nuevamente.";
+
 }
 
 
 // ======================================================
-// INICIO
+// INICIAR
 // ======================================================
 
-handleIndexPage();
-redirectLoggedUser();
+document.addEventListener(
+  "DOMContentLoaded",
+  async function () {
+
+    showEmailConfirmationMessage();
+
+    await handleIndexPage();
+
+    await redirectLoggedUser();
+
+  }
+);
