@@ -1,10 +1,14 @@
 // ======================================================
 // TIKIPAY DASHBOARD
+// Dashboard en tiempo real
 // ======================================================
 
 let dashboardAccount = null;
+let dashboardSession = null;
 
 let balanceIsHidden = false;
+
+let dashboardRefreshing = false;
 
 
 // ======================================================
@@ -13,121 +17,308 @@ let balanceIsHidden = false;
 
 async function initDashboard() {
 
-  const session =
-    await requireAuth();
+  try {
+
+    dashboardSession =
+      await requireAuth();
 
 
-  if (!session) {
-    return;
-  }
+    if (!dashboardSession) {
+      return;
+    }
 
 
-  // Leer preferencia:
-  // ocultar saldo al abrir TikiPay
+    // ==================================================
+    // PREFERENCIA DE VISIBILIDAD DEL SALDO
+    // ==================================================
 
-  balanceIsHidden =
-    localStorage.getItem(
-      "tikipay_hide_balance"
-    ) === "true";
-
-
-  const user =
-    session.user;
+    balanceIsHidden =
+      localStorage.getItem(
+        "tikipay_hide_balance"
+      ) === "true";
 
 
-  // ====================================================
-  // PERFIL
-  // ====================================================
-
-  const {
-    data: profile,
-    error: profileError
-  } =
-    await supabaseClient
-      .from("profiles")
-      .select(`
-        tiki_id,
-        full_name,
-        preferred_currency,
-        language
-      `)
-      .eq(
-        "id",
-        user.id
-      )
-      .single();
+    const user =
+      dashboardSession.user;
 
 
-  if (profileError) {
+    // ==================================================
+    // PERFIL
+    // ==================================================
+
+    const {
+      data: profile,
+      error: profileError
+    } =
+      await supabaseClient
+        .from("profiles")
+        .select(`
+          tiki_id,
+          full_name,
+          preferred_currency,
+          language
+        `)
+        .eq(
+          "id",
+          user.id
+        )
+        .single();
+
+
+    if (profileError) {
+
+      console.error(
+        "❌ Error cargando perfil:",
+        profileError
+      );
+
+    }
+
+
+    renderProfile(
+      profile
+    );
+
+
+    // ==================================================
+    // CARGAR INFORMACIÓN ACTUAL
+    // ==================================================
+
+    await refreshDashboardData();
+
+
+    // ==================================================
+    // EVENTOS DE ACTUALIZACIÓN
+    // ==================================================
+
+    bindDashboardRefreshEvents();
+
+
+    console.log(
+      "✅ Dashboard TikiPay iniciado correctamente"
+    );
+
+
+  } catch (error) {
 
     console.error(
-      "Error cargando perfil:",
-      profileError
+      "❌ Error iniciando dashboard:",
+      error
     );
 
   }
 
+}
 
-  // ====================================================
-  // CUENTA
-  // ====================================================
 
-  const {
-    data: account,
-    error: accountError
-  } =
-    await supabaseClient
-      .from("accounts")
-      .select(`
-        id,
-        currency,
-        available_balance,
-        frozen_balance,
-        status
-      `)
-      .eq(
-        "user_id",
-        user.id
-      )
-      .single();
+// ======================================================
+// REFRESCAR TODO EL DASHBOARD
+// ======================================================
 
+async function refreshDashboardData() {
 
   if (
-    accountError ||
-    !account
+    dashboardRefreshing ||
+    !dashboardSession?.user
   ) {
 
-    console.error(
-      "Error cargando cuenta:",
-      accountError
-    );
-
     return;
+
   }
 
 
-  dashboardAccount =
-    account;
+  dashboardRefreshing =
+    true;
 
 
-  renderProfile(
-    profile
-  );
+  try {
+
+    const userId =
+      dashboardSession.user.id;
 
 
-  renderAccount(
-    account
-  );
+    // ==================================================
+    // CUENTA REAL DESDE SUPABASE
+    // ==================================================
+
+    const {
+      data: account,
+      error: accountError
+    } =
+      await supabaseClient
+        .from("accounts")
+        .select(`
+          id,
+          user_id,
+          currency,
+          available_balance,
+          frozen_balance,
+          status,
+          updated_at
+        `)
+        .eq(
+          "user_id",
+          userId
+        )
+        .single();
 
 
-  await loadRecentTransactions(
-    account.id
-  );
+    if (
+      accountError ||
+      !account
+    ) {
+
+      console.error(
+        "❌ Error cargando cuenta:",
+        accountError
+      );
+
+      return;
+
+    }
 
 
-  await loadNotificationCount(
-    user.id
-  );
+    // IMPORTANTE:
+    // reemplazamos siempre la cuenta anterior
+    // por los datos actuales de Supabase.
+
+    dashboardAccount =
+      account;
+
+
+    // ==================================================
+    // MOSTRAR SALDO Y ESTADO
+    // ==================================================
+
+    renderAccount(
+      dashboardAccount
+    );
+
+
+    // ==================================================
+    // MOVIMIENTOS + NOTIFICACIONES
+    // ==================================================
+
+    await Promise.all([
+
+      loadRecentTransactions(
+        dashboardAccount.id
+      ),
+
+      loadNotificationCount(
+        userId
+      )
+
+    ]);
+
+
+    console.log(
+      "🔄 Dashboard actualizado.",
+      {
+        available_balance:
+          dashboardAccount
+            .available_balance,
+
+        frozen_balance:
+          dashboardAccount
+            .frozen_balance,
+
+        updated_at:
+          dashboardAccount
+            .updated_at
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Error actualizando dashboard:",
+      error
+    );
+
+
+  } finally {
+
+    dashboardRefreshing =
+      false;
+
+  }
+
+}
+
+
+// ======================================================
+// ACTUALIZAR SOLO LA CUENTA
+// ======================================================
+
+async function refreshDashboardAccount() {
+
+  if (
+    !dashboardSession?.user
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    const {
+      data: account,
+      error
+    } =
+      await supabaseClient
+        .from("accounts")
+        .select(`
+          id,
+          user_id,
+          currency,
+          available_balance,
+          frozen_balance,
+          status,
+          updated_at
+        `)
+        .eq(
+          "user_id",
+          dashboardSession.user.id
+        )
+        .single();
+
+
+    if (
+      error ||
+      !account
+    ) {
+
+      console.error(
+        "❌ Error refrescando saldo:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    dashboardAccount =
+      account;
+
+
+    renderAccount(
+      dashboardAccount
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "❌ Error refrescando cuenta:",
+      error
+    );
+
+  }
 
 }
 
@@ -142,7 +333,8 @@ function renderProfile(
 
   const name =
     profile?.full_name?.trim()
-    || "Usuario";
+    ||
+    "Usuario";
 
 
   const welcome =
@@ -175,7 +367,8 @@ function renderProfile(
 
     tiki.textContent =
       profile?.tiki_id
-      || "TIKI";
+      ||
+      "TIKI";
 
   }
 
@@ -200,6 +393,12 @@ function renderAccount(
   account
 ) {
 
+  if (!account) {
+    return;
+  }
+
+
+  // Primero actualizamos el saldo.
   updateBalanceVisibility();
 
 
@@ -217,41 +416,62 @@ function renderAccount(
   const states = {
 
     ACTIVE: {
-      text: "Activa",
-      css: "active"
+      text:
+        "Activa",
+
+      css:
+        "active"
     },
 
     LOGIN_BLOCKED: {
-      text: "Bloqueada",
-      css: "blocked"
+      text:
+        "Bloqueada",
+
+      css:
+        "blocked"
     },
 
     OUTGOING_FROZEN: {
-      text: "Envíos congelados",
-      css: "frozen"
+      text:
+        "Envíos congelados",
+
+      css:
+        "frozen"
     },
 
     FULLY_FROZEN: {
-      text: "Congelada",
-      css: "frozen"
+      text:
+        "Congelada",
+
+      css:
+        "frozen"
     },
 
     SUSPENDED: {
-      text: "Suspendida",
-      css: "blocked"
+      text:
+        "Suspendida",
+
+      css:
+        "blocked"
     },
 
     CLOSED: {
-      text: "Cerrada",
-      css: "blocked"
+      text:
+        "Cerrada",
+
+      css:
+        "blocked"
     }
 
   };
 
 
   const state =
-    states[account.status]
-    || states.ACTIVE;
+    states[
+      account.status
+    ]
+    ||
+    states.ACTIVE;
 
 
   statusElement.textContent =
@@ -294,7 +514,9 @@ function updateBalanceVisibility() {
     );
 
 
-  if (balanceIsHidden) {
+  if (
+    balanceIsHidden
+  ) {
 
     if (available) {
 
@@ -317,6 +539,12 @@ function updateBalanceVisibility() {
       eye.textContent =
         "🙈";
 
+
+      eye.setAttribute(
+        "aria-label",
+        "Mostrar saldo"
+      );
+
     }
 
   } else {
@@ -324,9 +552,11 @@ function updateBalanceVisibility() {
     if (available) {
 
       available.textContent =
-        formatBOB(
+        formatDashboardMoney(
           dashboardAccount
-            .available_balance
+            .available_balance,
+          dashboardAccount
+            .currency
         );
 
     }
@@ -335,9 +565,11 @@ function updateBalanceVisibility() {
     if (frozen) {
 
       frozen.textContent =
-        formatBOB(
+        formatDashboardMoney(
           dashboardAccount
-            .frozen_balance
+            .frozen_balance,
+          dashboardAccount
+            .currency
         );
 
     }
@@ -348,6 +580,12 @@ function updateBalanceVisibility() {
       eye.textContent =
         "👁";
 
+
+      eye.setAttribute(
+        "aria-label",
+        "Ocultar saldo"
+      );
+
     }
 
   }
@@ -356,16 +594,110 @@ function updateBalanceVisibility() {
 
 
 // ======================================================
+// FORMATEAR MONEDA
+// ======================================================
+
+function formatDashboardMoney(
+  amount,
+  currency = "BOB"
+) {
+
+  const value =
+    Number(
+      amount || 0
+    );
+
+
+  const normalized =
+    String(
+      currency || "BOB"
+    ).toUpperCase();
+
+
+  if (
+    normalized ===
+    "BOB"
+  ) {
+
+    if (
+      typeof formatBOB ===
+      "function"
+    ) {
+
+      return formatBOB(
+        value
+      );
+
+    }
+
+
+    return (
+      "Bs " +
+      value.toLocaleString(
+        "es-BO",
+        {
+          minimumFractionDigits:
+            2,
+
+          maximumFractionDigits:
+            2
+        }
+      )
+    );
+
+  }
+
+
+  return (
+    value.toLocaleString(
+      "es-BO",
+      {
+        minimumFractionDigits:
+          2,
+
+        maximumFractionDigits:
+          8
+      }
+    )
+    +
+    " "
+    +
+    normalized
+  );
+
+}
+
+
+// ======================================================
 // BOTÓN DEL OJO
 // ======================================================
 
-const balanceButton =
-  document.getElementById(
-    "toggleBalance"
-  );
+function bindBalanceButton() {
+
+  const balanceButton =
+    document.getElementById(
+      "toggleBalance"
+    );
 
 
-if (balanceButton) {
+  if (!balanceButton) {
+    return;
+  }
+
+
+  if (
+    balanceButton.dataset.bound ===
+    "true"
+  ) {
+
+    return;
+
+  }
+
+
+  balanceButton.dataset.bound =
+    "true";
+
 
   balanceButton.addEventListener(
     "click",
@@ -373,6 +705,15 @@ if (balanceButton) {
 
       balanceIsHidden =
         !balanceIsHidden;
+
+
+      // Guardar preferencia.
+      localStorage.setItem(
+        "tikipay_hide_balance",
+        String(
+          balanceIsHidden
+        )
+      );
 
 
       updateBalanceVisibility();
@@ -390,6 +731,11 @@ if (balanceButton) {
 async function loadRecentTransactions(
   accountId
 ) {
+
+  if (!accountId) {
+    return;
+  }
+
 
   const {
     data,
@@ -423,11 +769,12 @@ async function loadRecentTransactions(
   if (error) {
 
     console.error(
-      "Error cargando movimientos:",
+      "❌ Error cargando movimientos:",
       error
     );
 
     return;
+
   }
 
 
@@ -442,12 +789,34 @@ async function loadRecentTransactions(
   }
 
 
+  // ==================================================
+  // SIN MOVIMIENTOS
+  // ==================================================
+
   if (
     !data ||
     data.length === 0
   ) {
 
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <p>
+          Sin movimientos
+        </p>
+
+        <small>
+          Tus últimas operaciones aparecerán aquí.
+        </small>
+
+      </div>
+
+    `;
+
+
     return;
+
   }
 
 
@@ -455,13 +824,18 @@ async function loadRecentTransactions(
     "";
 
 
+  // ==================================================
+  // MOVIMIENTOS
+  // ==================================================
+
   data.forEach(
     transaction => {
 
       const incoming =
-        transaction
-          .receiver_account_id
-        === accountId;
+        isIncomingTransaction(
+          transaction,
+          accountId
+        );
 
 
       const row =
@@ -479,25 +853,39 @@ async function loadRecentTransactions(
         <div class="transaction-info">
 
           <div class="transaction-icon">
-            ${incoming ? "↓" : "↑"}
+
+            ${
+              incoming
+                ?
+                "↓"
+                :
+                "↑"
+            }
+
           </div>
+
 
           <div>
 
             <strong>
-              ${escapeHTML(
+
+              ${escapeDashboardHTML(
                 transaction.description
                 ||
                 transactionLabel(
                   transaction.type
                 )
               )}
+
             </strong>
 
+
             <small>
-              ${formatTikiDate(
+
+              ${formatDashboardDate(
                 transaction.created_at
               )}
+
             </small>
 
           </div>
@@ -510,20 +898,25 @@ async function loadRecentTransactions(
             transaction-amount
             ${
               incoming
-                ? "incoming"
-                : "outgoing"
+                ?
+                "incoming"
+                :
+                "outgoing"
             }
           "
         >
 
           ${
             incoming
-              ? "+"
-              : "-"
+              ?
+              "+"
+              :
+              "-"
           }
 
-          ${formatBOB(
-            transaction.amount
+          ${formatDashboardMoney(
+            transaction.amount,
+            transaction.currency
           )}
 
         </strong>
@@ -542,12 +935,56 @@ async function loadRecentTransactions(
 
 
 // ======================================================
+// DETERMINAR ENTRADA / SALIDA
+// ======================================================
+
+function isIncomingTransaction(
+  transaction,
+  accountId
+) {
+
+  // Transferencia recibida
+  if (
+    transaction.receiver_account_id ===
+    accountId
+  ) {
+
+    return true;
+
+  }
+
+
+  // Depósitos / créditos
+  if (
+    transaction.type ===
+      "DEPOSIT"
+    ||
+    transaction.type ===
+      "ADMIN_CREDIT"
+  ) {
+
+    return true;
+
+  }
+
+
+  return false;
+
+}
+
+
+// ======================================================
 // NOTIFICACIONES
 // ======================================================
 
 async function loadNotificationCount(
   userId
 ) {
+
+  if (!userId) {
+    return;
+  }
+
 
   const {
     count,
@@ -558,8 +995,11 @@ async function loadNotificationCount(
       .select(
         "id",
         {
-          count: "exact",
-          head: true
+          count:
+            "exact",
+
+          head:
+            true
         }
       )
       .eq(
@@ -575,11 +1015,12 @@ async function loadNotificationCount(
   if (error) {
 
     console.error(
-      "Error contando notificaciones:",
+      "❌ Error contando notificaciones:",
       error
     );
 
     return;
+
   }
 
 
@@ -595,14 +1036,18 @@ async function loadNotificationCount(
 
 
   if (
-    count &&
-    count > 0
+    Number(count) >
+    0
   ) {
 
     badge.textContent =
       count > 99
-        ? "99+"
-        : String(count);
+        ?
+        "99+"
+        :
+        String(
+          count
+        );
 
 
     badge.classList.add(
@@ -665,7 +1110,167 @@ function transactionLabel(
 
 
 // ======================================================
-// INICIAR DASHBOARD
+// FORMATEAR FECHA
 // ======================================================
+
+function formatDashboardDate(
+  value
+) {
+
+  if (
+    typeof formatTikiDate ===
+    "function"
+  ) {
+
+    return formatTikiDate(
+      value
+    );
+
+  }
+
+
+  try {
+
+    return new Date(
+      value
+    ).toLocaleString(
+      "es-BO"
+    );
+
+  } catch {
+
+    return "";
+
+  }
+
+}
+
+
+// ======================================================
+// HTML SEGURO
+// ======================================================
+
+function escapeDashboardHTML(
+  value
+) {
+
+  if (
+    typeof escapeHTML ===
+    "function"
+  ) {
+
+    return escapeHTML(
+      value
+    );
+
+  }
+
+
+  return String(
+    value ?? ""
+  )
+    .replaceAll(
+      "&",
+      "&amp;"
+    )
+    .replaceAll(
+      "<",
+      "&lt;"
+    )
+    .replaceAll(
+      ">",
+      "&gt;"
+    )
+    .replaceAll(
+      '"',
+      "&quot;"
+    )
+    .replaceAll(
+      "'",
+      "&#039;"
+    );
+
+}
+
+
+// ======================================================
+// EVENTOS DE ACTUALIZACIÓN AUTOMÁTICA
+// ======================================================
+
+let dashboardEventsBound =
+  false;
+
+
+function bindDashboardRefreshEvents() {
+
+  if (
+    dashboardEventsBound
+  ) {
+
+    return;
+
+  }
+
+
+  dashboardEventsBound =
+    true;
+
+
+  // ==================================================
+  // REGRESAR CON ATRÁS / ADELANTE DEL NAVEGADOR
+  // ==================================================
+
+  window.addEventListener(
+    "pageshow",
+    async function () {
+
+      await refreshDashboardData();
+
+    }
+  );
+
+
+  // ==================================================
+  // VOLVER A LA PESTAÑA
+  // ==================================================
+
+  document.addEventListener(
+    "visibilitychange",
+    async function () {
+
+      if (
+        document.visibilityState ===
+        "visible"
+      ) {
+
+        await refreshDashboardData();
+
+      }
+
+    }
+  );
+
+
+  // ==================================================
+  // RECUPERAR FOCO DE LA VENTANA
+  // ==================================================
+
+  window.addEventListener(
+    "focus",
+    async function () {
+
+      await refreshDashboardData();
+
+    }
+  );
+
+}
+
+
+// ======================================================
+// INICIAR
+// ======================================================
+
+bindBalanceButton();
 
 initDashboard();

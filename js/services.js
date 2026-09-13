@@ -1,4 +1,4 @@
-console.log("✅ TikiPay services.js está cargando");
+console.log("✅ TikiPay services.js cargado");
 
 
 // ======================================================
@@ -28,15 +28,9 @@ async function initServices() {
     servicesSession =
       await requireAuth();
 
-
     if (!servicesSession) {
       return;
     }
-
-
-    console.log(
-      "✅ Usuario autenticado para servicios"
-    );
 
 
     injectPaymentModalStyles();
@@ -57,7 +51,6 @@ async function initServices() {
       allServices
     );
 
-
     bindServiceSearch();
 
 
@@ -74,7 +67,7 @@ async function initServices() {
 
 
 // ======================================================
-// CARGAR CUENTA
+// CARGAR CUENTA DEL USUARIO
 // ======================================================
 
 async function loadServicesAccount() {
@@ -86,9 +79,7 @@ async function loadServicesAccount() {
       error
     } =
       await supabaseClient
-        .from(
-          "accounts"
-        )
+        .from("accounts")
         .select(`
           id,
           user_id,
@@ -121,12 +112,6 @@ async function loadServicesAccount() {
       data;
 
 
-    console.log(
-      "✅ Cuenta cargada:",
-      servicesAccount
-    );
-
-
   } catch (error) {
 
     console.error(
@@ -152,9 +137,7 @@ async function loadServiceCategories() {
     error
   } =
     await supabaseClient
-      .from(
-        "service_categories"
-      )
+      .from("service_categories")
       .select(`
         id,
         name,
@@ -189,12 +172,6 @@ async function loadServiceCategories() {
   serviceCategories =
     data || [];
 
-
-  console.log(
-    "✅ Categorías:",
-    serviceCategories
-  );
-
 }
 
 
@@ -209,9 +186,7 @@ async function loadServices() {
     error
   } =
     await supabaseClient
-      .from(
-        "services"
-      )
+      .from("services")
       .select(`
         id,
         category_id,
@@ -255,17 +230,11 @@ async function loadServices() {
   allServices =
     data || [];
 
-
-  console.log(
-    "✅ Servicios:",
-    allServices
-  );
-
 }
 
 
 // ======================================================
-// MOSTRAR CATEGORÍAS
+// RENDER CATEGORÍAS
 // ======================================================
 
 function renderCategories() {
@@ -362,7 +331,7 @@ function renderCategories() {
 
 
   // --------------------------------------------------
-  // CATEGORÍAS
+  // CATEGORÍAS SUPABASE
   // --------------------------------------------------
 
   serviceCategories.forEach(
@@ -463,7 +432,7 @@ function setActiveCategory(
 
 
 // ======================================================
-// MOSTRAR SERVICIOS
+// RENDER SERVICIOS
 // ======================================================
 
 function renderServices(
@@ -537,6 +506,7 @@ function renderServices(
         );
 
 
+      // Conserva diseño original
       card.className =
         "service-card";
 
@@ -767,7 +737,7 @@ function openService(
 ) {
 
   // --------------------------------------------------
-  // TIKIPAY ACCESS
+  // TIKIPAY ACCESS / WEB3
   // --------------------------------------------------
 
   if (
@@ -800,7 +770,7 @@ function openService(
 
 
 // ======================================================
-// MODO VISUAL DEL MODAL
+// MODO DE ÉXITO
 // ======================================================
 
 function setPaymentSuccessMode(
@@ -819,15 +789,25 @@ function setPaymentSuccessMode(
 
 
   const selectors = [
+
     ".tikipay-payment-icon",
+
     ".tikipay-payment-label",
+
     "#paymentServiceName",
+
     "#paymentServiceProvider",
+
     "#paymentBalanceRow",
+
     "#paymentTotalRow",
+
     "#paymentVariableWrapper",
+
     "#confirmServicePayment",
+
     ".tikipay-payment-security"
+
   ];
 
 
@@ -841,17 +821,12 @@ function setPaymentSuccessMode(
         .forEach(
           element => {
 
-            if (success) {
-
-              element.style.display =
-                "none";
-
-            } else {
-
-              element.style.display =
+            element.style.display =
+              success
+                ?
+                "none"
+                :
                 "";
-
-            }
 
           }
         );
@@ -878,7 +853,7 @@ function setPaymentSuccessMode(
 
 
 // ======================================================
-// ABRIR MODAL DE PAGO
+// ABRIR MODAL
 // ======================================================
 
 function openPaymentModal(
@@ -927,7 +902,7 @@ function openPaymentModal(
   }
 
 
-  // Restaurar formulario normal
+  // Restaurar formulario
   setPaymentSuccessMode(
     false
   );
@@ -1190,7 +1165,7 @@ function closePaymentModal() {
 
 
 // ======================================================
-// PROCESAR PAGO
+// CONFIRMAR PAGO
 // ======================================================
 
 async function confirmServicePayment() {
@@ -1237,7 +1212,8 @@ async function confirmServicePayment() {
     amount =
       Number(
         String(
-          variableInput.value || ""
+          variableInput.value ||
+          ""
         )
           .replace(
             ",",
@@ -1279,16 +1255,17 @@ async function confirmServicePayment() {
       amount;
 
 
-  // --------------------------------------------------
-  // PREVALIDAR SALDO
-  // --------------------------------------------------
-
   const currentBalance =
     Number(
       servicesAccount
-        ?.available_balance || 0
+        ?.available_balance ||
+      0
     );
 
+
+  // --------------------------------------------------
+  // VALIDAR SALDO
+  // --------------------------------------------------
 
   if (
     amountToPay >
@@ -1324,9 +1301,9 @@ async function confirmServicePayment() {
 
   try {
 
-    // --------------------------------------------------
-    // RPC SEGURO EN SUPABASE
-    // --------------------------------------------------
+    // ==================================================
+    // RPC SEGURO
+    // ==================================================
 
     const {
       data,
@@ -1393,7 +1370,7 @@ async function confirmServicePayment() {
 
 
     // --------------------------------------------------
-    // ACTUALIZAR SALDO LOCAL
+    // SALDO LOCAL
     // --------------------------------------------------
 
     servicesAccount.available_balance =
@@ -1403,7 +1380,7 @@ async function confirmServicePayment() {
 
 
     // --------------------------------------------------
-    // MOSTRAR COMPROBANTE
+    // COMPROBANTE
     // --------------------------------------------------
 
     renderPaymentReceipt(
@@ -1437,11 +1414,14 @@ async function confirmServicePayment() {
       false;
 
 
+    const modal =
+      document.getElementById(
+        "servicePaymentModal"
+      );
+
+
     if (
-      !document
-        .getElementById(
-          "servicePaymentModal"
-        )
+      !modal
         ?.classList
         .contains(
           "payment-success-mode"
@@ -1480,10 +1460,6 @@ function renderPaymentReceipt(
     return;
   }
 
-
-  // --------------------------------------------------
-  // OCULTAR FORMULARIO
-  // --------------------------------------------------
 
   setPaymentSuccessMode(
     true
@@ -1676,8 +1652,7 @@ function renderPaymentReceipt(
 
     <div class="tikipay-receipt-security">
 
-      🔒 Pago procesado de forma segura
-      mediante TikiPay
+      🔒 Pago procesado de forma segura mediante TikiPay
 
     </div>
 
@@ -1689,7 +1664,9 @@ function renderPaymentReceipt(
         id="paymentMovementsButton"
         class="tikipay-payment-secondary"
       >
+
         Ver movimientos
+
       </button>
 
 
@@ -1698,7 +1675,9 @@ function renderPaymentReceipt(
         id="paymentFinishButton"
         class="tikipay-payment-primary"
       >
+
         Finalizar
+
       </button>
 
     </div>
@@ -1834,6 +1813,7 @@ function createPaymentModal() {
           Saldo disponible
         </span>
 
+
         <strong id="paymentAvailableBalance">
           Bs 0,00
         </strong>
@@ -1849,6 +1829,7 @@ function createPaymentModal() {
         <span>
           Total a pagar
         </span>
+
 
         <strong id="paymentFixedAmount">
           Bs 0,00
@@ -1895,13 +1876,17 @@ function createPaymentModal() {
         id="confirmServicePayment"
         class="tikipay-payment-primary"
       >
+
         Confirmar pago
+
       </button>
 
 
       <p class="tikipay-payment-security">
+
         🔒 El saldo es procesado mediante
         una operación segura de TikiPay.
+
       </p>
 
     </div>
@@ -1914,9 +1899,9 @@ function createPaymentModal() {
   );
 
 
-  // --------------------------------------------------
+  // ==================================================
   // CERRAR
-  // --------------------------------------------------
+  // ==================================================
 
   document
     .getElementById(
@@ -1928,9 +1913,9 @@ function createPaymentModal() {
     );
 
 
-  // --------------------------------------------------
-  // CONFIRMAR PAGO
-  // --------------------------------------------------
+  // ==================================================
+  // CONFIRMAR
+  // ==================================================
 
   document
     .getElementById(
@@ -1942,9 +1927,9 @@ function createPaymentModal() {
     );
 
 
-  // --------------------------------------------------
-  // ACTUALIZAR TOTAL EN MONTO VARIABLE
-  // --------------------------------------------------
+  // ==================================================
+  // MONTO VARIABLE
+  // ==================================================
 
   document
     .getElementById(
@@ -2012,9 +1997,9 @@ function createPaymentModal() {
     );
 
 
-  // --------------------------------------------------
-  // CLIC EN FONDO
-  // --------------------------------------------------
+  // ==================================================
+  // CLIC FUERA DEL MODAL
+  // ==================================================
 
   modal.addEventListener(
     "click",
@@ -2033,9 +2018,9 @@ function createPaymentModal() {
   );
 
 
-  // --------------------------------------------------
-  // ESC
-  // --------------------------------------------------
+  // ==================================================
+  // TECLA ESC
+  // ==================================================
 
   document.addEventListener(
     "keydown",
@@ -2057,7 +2042,7 @@ function createPaymentModal() {
 
 
 // ======================================================
-// RESULTADO DEL MODAL
+// MENSAJE DEL MODAL
 // ======================================================
 
 function showPaymentResult(
@@ -2096,7 +2081,7 @@ function showPaymentResult(
 
 
 // ======================================================
-// TOAST
+// TOAST SUPERIOR
 // ======================================================
 
 function showServiceToast(
@@ -2157,14 +2142,14 @@ function showServiceToast(
         );
 
       },
-      3500
+      3200
     );
 
 }
 
 
 // ======================================================
-// TRADUCIR ERRORES DEL RPC
+// TRADUCIR ERRORES
 // ======================================================
 
 function translateServicePaymentError(
@@ -2274,23 +2259,6 @@ function translateServicePaymentError(
   }
 
 
-  if (
-    text.includes(
-      "SERVICE_PAYMENTS"
-    )
-    ||
-    text.includes(
-      "COLUMN"
-    )
-  ) {
-
-    return (
-      "La base de datos de pagos necesita una corrección. Revisa la consola."
-    );
-
-  }
-
-
   return (
     "No se pudo completar el pago."
   );
@@ -2299,7 +2267,7 @@ function translateServicePaymentError(
 
 
 // ======================================================
-// PRECIO
+// PRECIO DEL SERVICIO
 // ======================================================
 
 function getServicePrice(
@@ -2452,7 +2420,7 @@ function formatServiceMoney(
 
 
 // ======================================================
-// ICONOS ORIGINALES
+// ICONOS DE CATEGORÍAS
 // ======================================================
 
 function categoryIcon(
@@ -2503,7 +2471,7 @@ function categoryIcon(
 
 
 // ======================================================
-// ID CORTO
+// ID DE OPERACIÓN CORTO
 // ======================================================
 
 function shortTransactionId(
@@ -2548,7 +2516,7 @@ function shortTransactionId(
 
 
 // ======================================================
-// HTML SEGURO
+// ESCAPAR HTML
 // ======================================================
 
 function safeHTML(
@@ -2595,8 +2563,7 @@ function safeHTML(
 
 
 // ======================================================
-// ESTILOS DEL MODAL DE PAGO
-// NO MODIFICA LAS TARJETAS ORIGINALES
+// ESTILOS DEL MODAL
 // ======================================================
 
 function injectPaymentModalStyles() {
@@ -2625,26 +2592,19 @@ function injectPaymentModalStyles() {
 
     .tikipay-payment-overlay {
 
-      position:
-        fixed;
+      position: fixed;
 
-      inset:
-        0;
+      inset: 0;
 
-      z-index:
-        99999;
+      z-index: 99999;
 
-      display:
-        none;
+      display: none;
 
-      align-items:
-        center;
+      align-items: center;
 
-      justify-content:
-        center;
+      justify-content: center;
 
-      padding:
-        18px;
+      padding: 18px;
 
       background:
         rgba(
@@ -2998,14 +2958,6 @@ function injectPaymentModalStyles() {
     }
 
 
-    .tikipay-payment-primary:hover:not(:disabled) {
-
-      filter:
-        brightness(.98);
-
-    }
-
-
     .tikipay-payment-primary:disabled {
 
       opacity:
@@ -3238,22 +3190,6 @@ function injectPaymentModalStyles() {
     }
 
 
-    .tikipay-receipt-row:first-of-type {
-
-      border-top:
-        none;
-
-    }
-
-
-    .tikipay-receipt-row span {
-
-      flex:
-        0 0 auto;
-
-    }
-
-
     .tikipay-receipt-row strong {
 
       color:
@@ -3323,8 +3259,7 @@ function injectPaymentModalStyles() {
     .tikipay-receipt-security {
 
       margin:
-        4px 0
-        15px;
+        4px 0 15px;
 
       padding:
         10px 12px;
@@ -3381,6 +3316,10 @@ function injectPaymentModalStyles() {
     }
 
 
+    /* ==================================================
+       AVISO FLOTANTE - AHORA ARRIBA
+    ================================================== */
+
     .tikipay-service-toast {
 
       position:
@@ -3392,13 +3331,16 @@ function injectPaymentModalStyles() {
       left:
         50%;
 
+      top:
+        24px;
+
       bottom:
-        82px;
+        auto;
 
       transform:
         translate(
           -50%,
-          20px
+          -20px
         );
 
       width:
@@ -3422,7 +3364,8 @@ function injectPaymentModalStyles() {
         none;
 
       transition:
-        .25s ease;
+        opacity .25s ease,
+        transform .25s ease;
 
       color:
         #ffffff;
@@ -3433,13 +3376,16 @@ function injectPaymentModalStyles() {
       font-weight:
         800;
 
+      text-align:
+        center;
+
       box-shadow:
         0 12px 35px
         rgba(
           0,
           0,
           0,
-          .16
+          .18
         );
 
     }
@@ -3540,6 +3486,19 @@ function injectPaymentModalStyles() {
 
         gap:
           10px;
+
+      }
+
+
+      .tikipay-service-toast {
+
+        top:
+          16px;
+
+        max-width:
+          calc(
+            100% - 24px
+          );
 
       }
 
