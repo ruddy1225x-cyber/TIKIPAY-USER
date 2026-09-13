@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Notificaciones | TikiPay
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <style>
+
+    .notifications-page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 20px 120px;
+    }
+
+    .notifications-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .notifications-header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .notifications-subtitle {
+      margin-top: 6px;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .mark-all-button {
+      border: 1px solid #dbe5f0;
+      background: white;
+      color: #075985;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .mark-all-button:hover {
+      background: #f0f9ff;
+    }
+
+    .mark-all-button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .notifications-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .notification-card {
+      background: white;
+      border: 1px solid #dbe5f0;
+      border-radius: 18px;
+      padding: 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: 0.2s ease;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .notification-card.unread {
+      border-color: #7dd3fc;
+      background: linear-gradient(
+        135deg,
+        #ffffff,
+        #f0f9ff
+      );
+    }
+
+    .notification-icon {
+      flex: 0 0 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: #eff6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notification-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .notification-title {
+      margin: 0;
+      color: #0f172a;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .notification-message {
+      margin: 6px 0 8px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .notification-date {
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .notification-unread-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      margin-top: 6px;
+      flex: 0 0 auto;
+    }
+
+    .notification-read-button {
+      margin-top: 12px;
+      border: none;
+      background: transparent;
+      color: #0284c7;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .notification-read-button:hover {
+      text-decoration: underline;
+    }
+
+    .notifications-empty {
+      background: white;
+      border: 1px solid #dbe5f0;
+      border-radius: 20px;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .notifications-empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      background: #f0f9ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .notifications-empty h3 {
+      margin: 0 0 7px;
+      color: #0f172a;
+    }
+
+    .notifications-empty p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .notifications-message {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .notifications-message.success {
+      color: #059669;
+    }
+
+    .notifications-message.error {
+      color: #dc2626;
+    }
+
+    @media (max-width: 600px) {
+
+      .notifications-header {
+        align-items: flex-start;
+      }
+
+      .notifications-header h1 {
+        font-size: 24px;
+      }
+
+      .mark-all-button {
+        font-size: 12px;
+        padding: 9px 11px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body class="app-page">
+
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        alt="TikiPay"
+        class="header-logo"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <a
+      href="dashboard.html"
+      class="icon-button"
+      aria-label="Volver"
+    >
+      ←
+    </a>
+
+  </header>
+
+
+  <!-- ==================================================
+       CONTENIDO
+  =================================================== -->
+
+  <main class="notifications-page">
+
+
+    <section class="notifications-header">
+
+      <div>
+
+        <p class="small-label">
+          TikiPay
+        </p>
+
+        <h1>
+          Notificaciones
+        </h1>
+
+        <p class="notifications-subtitle">
+          Mantente informado sobre movimientos y seguridad.
+        </p>
+
+      </div>
+
+
+      <button
+        id="markAllReadButton"
+        class="mark-all-button"
+        type="button"
+        disabled
+      >
+        Leer todo
+      </button>
+
+    </section>
+
+
+    <!-- ==================================================
+         LISTA
+    =================================================== -->
+
+    <section
+      id="notificationsList"
+      class="notifications-list"
+    >
+
+      <div class="notifications-empty">
+
+        <div class="notifications-empty-icon">
+          🔔
+        </div>
+
+        <h3>
+          Cargando...
+        </h3>
+
+      </div>
+
+    </section>
+
+
+    <p
+      id="notificationsMessage"
+      class="notifications-message"
+    ></p>
+
+
+  </main>
+
+
+  <!-- ==================================================
+       NAVEGACIÓN
+  =================================================== -->
+
+  <nav class="bottom-navigation">
+
+    <a
+      href="dashboard.html"
+      class="nav-item"
+    >
+      <span>⌂</span>
+      Inicio
+    </a>
+
+    <a
+      href="movimientos.html"
+      class="nav-item"
+    >
+      <span>⇄</span>
+      Movimientos
+    </a>
+
+    <a
+      href="servicios.html"
+      class="nav-item"
+    >
+      <span>◈</span>
+      Servicios
+    </a>
+
+    <a
+      href="perfil.html"
+      class="nav-item"
+    >
+      <span>○</span>
+      Perfil
+    </a>
+
+  </nav>
+
+
+  <!-- ==================================================
+       JAVASCRIPT
+  =================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+  <script
+    src="js/i18n.js"
+  ></script>
+
+  <script
+    src="js/notificaciones.js"
+  ></script>
+
+
+</body>
+
+</html>

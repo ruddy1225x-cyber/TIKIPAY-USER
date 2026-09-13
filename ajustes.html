@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Ajustes | TikiPay</title>
+
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="app-page">
+
+  <header class="page-header">
+
+    <a
+      href="perfil.html"
+      class="back-button"
+    >
+      ←
+    </a>
+
+    <h1>
+      Ajustes
+    </h1>
+
+    <span></span>
+
+  </header>
+
+
+  <main class="page-container">
+
+    <form
+      id="settingsForm"
+      class="settings-form"
+    >
+
+      <section class="settings-card">
+
+        <h2>
+          Preferencias
+        </h2>
+
+
+        <div class="form-group">
+
+          <label for="preferredLanguage">
+            Idioma
+          </label>
+
+          <select id="preferredLanguage">
+
+            <option value="es">
+              Español
+            </option>
+
+            <option value="en">
+              English
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="preferredCurrency">
+            Moneda principal
+          </label>
+
+          <select id="preferredCurrency">
+
+            <option value="BOB">
+              BOB - Boliviano
+            </option>
+
+            <option value="USD">
+              USD - Dólar
+            </option>
+
+          </select>
+
+        </div>
+
+      </section>
+
+
+      <section class="settings-card">
+
+        <h2>
+          Privacidad
+        </h2>
+
+
+        <label class="switch-row">
+
+          <div>
+
+            <strong>
+              Ocultar saldo al entrar
+            </strong>
+
+            <span>
+              El saldo aparecerá oculto por defecto.
+            </span>
+
+          </div>
+
+          <input
+            type="checkbox"
+            id="hideBalanceDefault"
+          >
+
+        </label>
+
+
+        <label class="switch-row">
+
+          <div>
+
+            <strong>
+              Notificaciones
+            </strong>
+
+            <span>
+              Recibir avisos de movimientos y seguridad.
+            </span>
+
+          </div>
+
+          <input
+            type="checkbox"
+            id="notificationsEnabled"
+            checked
+          >
+
+        </label>
+
+      </section>
+
+
+      <button
+        type="submit"
+        class="primary-button"
+      >
+        Guardar ajustes
+      </button>
+
+    </form>
+
+
+    <div
+      id="settingsMessage"
+      class="message"
+    ></div>
+
+  </main>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/perfil.js"></script>
+
+</body>
+</html>

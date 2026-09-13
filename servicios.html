@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Servicios | TikiPay</title>
+
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="app-page">
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+      <img
+        src="assets/android-chrome-192x192.png"
+        class="header-logo"
+        alt="TikiPay"
+      >
+
+      <span>
+        TikiPay
+      </span>
+    </a>
+
+  </header>
+
+
+  <main class="dashboard-container">
+
+    <section class="page-heading">
+
+      <p class="small-label">
+        Pagos
+      </p>
+
+      <h1>
+        Pagar servicios
+      </h1>
+
+      <p class="page-description">
+        Encuentra y paga tus servicios desde TikiPay.
+      </p>
+
+    </section>
+
+
+    <section class="service-search">
+
+      <input
+        type="search"
+        id="serviceSearch"
+        placeholder="Buscar servicio..."
+      >
+
+    </section>
+
+
+    <section
+      id="serviceCategories"
+      class="service-categories"
+    >
+    </section>
+
+
+    <section class="services-section">
+
+      <div class="section-title">
+
+        <h2>
+          Servicios disponibles
+        </h2>
+
+      </div>
+
+
+      <div
+        id="servicesGrid"
+        class="services-grid"
+      >
+
+        <div class="empty-state">
+
+          <p>
+            Cargando servicios...
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="access-banner">
+
+      <div>
+
+        <span class="small-label">
+          Web3
+        </span>
+
+        <h2>
+          TikiPay Access
+        </h2>
+
+        <p>
+          Membresías, eventos, cursos y contenido exclusivo.
+        </p>
+
+      </div>
+
+      <a
+        href="access.html"
+        class="secondary-button"
+      >
+        Explorar
+      </a>
+
+    </section>
+
+  </main>
+
+
+  <nav class="bottom-navigation">
+
+    <a href="dashboard.html" class="nav-item">
+      <span>⌂</span>
+      Inicio
+    </a>
+
+    <a href="movimientos.html" class="nav-item">
+      <span>⇄</span>
+      Movimientos
+    </a>
+
+    <a href="servicios.html" class="nav-item active">
+      <span>◈</span>
+      Servicios
+    </a>
+
+    <a href="perfil.html" class="nav-item">
+      <span>○</span>
+      Perfil
+    </a>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/services.js"></script>
+
+</body>
+</html>

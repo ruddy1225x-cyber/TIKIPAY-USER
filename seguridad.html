@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Seguridad | TikiPay
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+
+  <style>
+
+    .security-container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 20px 120px;
+    }
+
+
+    .security-heading {
+      margin-bottom: 24px;
+    }
+
+
+    .security-heading h1 {
+      margin: 4px 0 8px;
+      color: #0f172a;
+      font-size: 28px;
+    }
+
+
+    .security-heading p {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+
+    .security-card {
+      background: white;
+      border: 1px solid #dbe5f0;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow:
+        0 8px 30px
+        rgba(15, 23, 42, 0.04);
+    }
+
+
+    .security-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+
+    .security-card-icon {
+      width: 46px;
+      height: 46px;
+      flex: 0 0 46px;
+      border-radius: 14px;
+      background: #eff6ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+
+    .security-card h2 {
+      margin: 0 0 5px;
+      color: #0f172a;
+      font-size: 18px;
+    }
+
+
+    .security-card-description {
+      margin: 0;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+
+    .security-form-group {
+      margin-bottom: 16px;
+    }
+
+
+    .security-form-group label {
+      display: block;
+      margin-bottom: 7px;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+
+    .password-input-wrapper {
+      position: relative;
+    }
+
+
+    .password-input-wrapper input {
+      width: 100%;
+      min-height: 46px;
+      padding:
+        0
+        48px
+        0
+        14px;
+
+      border:
+        1px solid
+        #cbd5e1;
+
+      border-radius:
+        12px;
+
+      background:
+        white;
+
+      color:
+        #0f172a;
+
+      outline:
+        none;
+
+      box-sizing:
+        border-box;
+    }
+
+
+    .password-input-wrapper input:focus {
+      border-color:
+        #0ea5e9;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(14, 165, 233, 0.10);
+    }
+
+
+    .password-eye {
+      position: absolute;
+
+      top:
+        50%;
+
+      right:
+        10px;
+
+      transform:
+        translateY(-50%);
+
+      width:
+        34px;
+
+      height:
+        34px;
+
+      border:
+        none;
+
+      border-radius:
+        9px;
+
+      background:
+        transparent;
+
+      cursor:
+        pointer;
+    }
+
+
+    .password-requirements {
+      margin:
+        -5px
+        0
+        17px;
+
+      color:
+        #64748b;
+
+      font-size:
+        12px;
+
+      line-height:
+        1.6;
+    }
+
+
+    .security-primary-button {
+      width:
+        100%;
+
+      min-height:
+        46px;
+
+      border:
+        none;
+
+      border-radius:
+        12px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #0f62e8,
+          #06b6d4
+        );
+
+      color:
+        white;
+
+      font-weight:
+        800;
+
+      cursor:
+        pointer;
+    }
+
+
+    .security-primary-button:disabled {
+      opacity:
+        0.6;
+
+      cursor:
+        not-allowed;
+    }
+
+
+    .security-secondary-button {
+      min-height:
+        42px;
+
+      padding:
+        0 16px;
+
+      border:
+        1px solid
+        #cbd5e1;
+
+      border-radius:
+        11px;
+
+      background:
+        white;
+
+      color:
+        #075985;
+
+      font-weight:
+        700;
+
+      cursor:
+        pointer;
+    }
+
+
+    .security-secondary-button:hover {
+      background:
+        #f0f9ff;
+    }
+
+
+    .security-secondary-button:disabled {
+      opacity:
+        0.5;
+
+      cursor:
+        not-allowed;
+    }
+
+
+    .security-row {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        18px;
+    }
+
+
+    .security-row-content {
+      flex:
+        1;
+    }
+
+
+    .security-status {
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      gap:
+        6px;
+
+      margin-top:
+        9px;
+
+      padding:
+        5px 9px;
+
+      border-radius:
+        999px;
+
+      background:
+        #f1f5f9;
+
+      color:
+        #475569;
+
+      font-size:
+        11px;
+
+      font-weight:
+        700;
+    }
+
+
+    .security-status.active {
+      background:
+        #dcfce7;
+
+      color:
+        #15803d;
+    }
+
+
+    .security-status.pending {
+      background:
+        #fef3c7;
+
+      color:
+        #a16207;
+    }
+
+
+    .security-message {
+      min-height:
+        18px;
+
+      margin-top:
+        14px;
+
+      text-align:
+        center;
+
+      font-size:
+        13px;
+
+      font-weight:
+        600;
+    }
+
+
+    .security-message.success {
+      color:
+        #059669;
+    }
+
+
+    .security-message.error {
+      color:
+        #dc2626;
+    }
+
+
+    .security-account-info {
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
+
+      gap:
+        14px;
+
+      margin-top:
+        18px;
+    }
+
+
+    .security-info-box {
+      border:
+        1px solid
+        #e2e8f0;
+
+      border-radius:
+        14px;
+
+      padding:
+        14px;
+
+      background:
+        #f8fafc;
+    }
+
+
+    .security-info-box span {
+      display:
+        block;
+
+      margin-bottom:
+        5px;
+
+      color:
+        #64748b;
+
+      font-size:
+        11px;
+    }
+
+
+    .security-info-box strong {
+      display:
+        block;
+
+      color:
+        #0f172a;
+
+      font-size:
+        13px;
+
+      word-break:
+        break-word;
+    }
+
+
+    @media (
+      max-width: 600px
+    ) {
+
+      .security-container {
+        padding:
+          22px
+          16px
+          110px;
+      }
+
+
+      .security-heading h1 {
+        font-size:
+          24px;
+      }
+
+
+      .security-card {
+        padding:
+          20px;
+      }
+
+
+      .security-row {
+        align-items:
+          flex-start;
+
+        flex-direction:
+          column;
+      }
+
+
+      .security-secondary-button {
+        width:
+          100%;
+      }
+
+
+      .security-account-info {
+        grid-template-columns:
+          1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body class="app-page">
+
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        class="header-logo"
+        alt="TikiPay"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <a
+      href="perfil.html"
+      class="icon-button"
+      aria-label="Volver"
+    >
+      ←
+    </a>
+
+  </header>
+
+
+  <!-- ==================================================
+       CONTENIDO
+  =================================================== -->
+
+  <main class="security-container">
+
+
+    <section class="security-heading">
+
+      <p class="small-label">
+        TikiPay
+      </p>
+
+      <h1>
+        Seguridad
+      </h1>
+
+      <p>
+        Protege tu cuenta y administra tus credenciales.
+      </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         INFORMACIÓN
+    =================================================== -->
+
+    <section class="security-card">
+
+      <div class="security-card-header">
+
+        <div class="security-card-icon">
+          🛡️
+        </div>
+
+        <div>
+
+          <h2>
+            Estado de seguridad
+          </h2>
+
+          <p class="security-card-description">
+            Información básica de tu sesión TikiPay.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="security-account-info">
+
+        <div class="security-info-box">
+
+          <span>
+            Correo electrónico
+          </span>
+
+          <strong id="securityEmail">
+            Cargando...
+          </strong>
+
+        </div>
+
+
+        <div class="security-info-box">
+
+          <span>
+            Estado de sesión
+          </span>
+
+          <strong id="securitySessionStatus">
+            Cargando...
+          </strong>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         CAMBIAR CONTRASEÑA
+    =================================================== -->
+
+    <section class="security-card">
+
+      <div class="security-card-header">
+
+        <div class="security-card-icon">
+          🔐
+        </div>
+
+        <div>
+
+          <h2>
+            Cambiar contraseña
+          </h2>
+
+          <p class="security-card-description">
+            Utiliza una contraseña segura y diferente de las que usas en otros servicios.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <form id="passwordForm">
+
+
+        <div class="security-form-group">
+
+          <label for="newPassword">
+            Nueva contraseña
+          </label>
+
+
+          <div class="password-input-wrapper">
+
+            <input
+              id="newPassword"
+              type="password"
+              minlength="8"
+              maxlength="72"
+              autocomplete="new-password"
+              placeholder="Mínimo 8 caracteres"
+              required
+            >
+
+            <button
+              type="button"
+              class="password-eye"
+              data-password-target="newPassword"
+              aria-label="Mostrar contraseña"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="security-form-group">
+
+          <label for="confirmPassword">
+            Confirmar nueva contraseña
+          </label>
+
+
+          <div class="password-input-wrapper">
+
+            <input
+              id="confirmPassword"
+              type="password"
+              minlength="8"
+              maxlength="72"
+              autocomplete="new-password"
+              placeholder="Repite tu contraseña"
+              required
+            >
+
+            <button
+              type="button"
+              class="password-eye"
+              data-password-target="confirmPassword"
+              aria-label="Mostrar contraseña"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="password-requirements">
+
+          • Mínimo 8 caracteres.<br>
+          • Utiliza una contraseña difícil de adivinar.<br>
+          • No reutilices contraseñas de otros servicios.
+
+        </div>
+
+
+        <button
+          id="changePasswordButton"
+          class="security-primary-button"
+          type="submit"
+        >
+          Cambiar contraseña
+        </button>
+
+
+        <p
+          id="passwordMessage"
+          class="security-message"
+        ></p>
+
+      </form>
+
+    </section>
+
+
+    <!-- ==================================================
+         VERIFICACIÓN EN DOS PASOS
+    =================================================== -->
+
+    <section class="security-card">
+
+      <div class="security-row">
+
+        <div class="security-row-content">
+
+          <div class="security-card-header">
+
+            <div class="security-card-icon">
+              📱
+            </div>
+
+            <div>
+
+              <h2>
+                Verificación en dos pasos
+              </h2>
+
+              <p class="security-card-description">
+                Añade una capa adicional de seguridad.
+              </p>
+
+              <span class="security-status pending">
+                Próximamente
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="mfaButton"
+          class="security-secondary-button"
+          type="button"
+          disabled
+        >
+          Configurar
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         SESIONES
+    =================================================== -->
+
+    <section class="security-card">
+
+      <div class="security-row">
+
+        <div class="security-row-content">
+
+          <div class="security-card-header">
+
+            <div class="security-card-icon">
+              💻
+            </div>
+
+            <div>
+
+              <h2>
+                Sesiones
+              </h2>
+
+              <p class="security-card-description">
+                Si sospechas de actividad no autorizada, cierra tus demás sesiones.
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <button
+          id="closeOtherSessionsButton"
+          class="security-secondary-button"
+          type="button"
+        >
+          Cerrar otras sesiones
+        </button>
+
+      </div>
+
+
+      <p
+        id="sessionsMessage"
+        class="security-message"
+      ></p>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- ==================================================
+       JAVASCRIPT
+  =================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+  <script
+    src="js/i18n.js"
+  ></script>
+
+  <script
+    src="js/seguridad.js"
+  ></script>
+
+
+</body>
+
+</html>

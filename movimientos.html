@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Movimientos | TikiPay</title>
+
+  <link rel="icon" href="assets/favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="app-page">
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        class="header-logo"
+        alt="TikiPay"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <a
+      href="perfil.html"
+      class="profile-button"
+    >
+      <span id="profileInitial">
+        T
+      </span>
+    </a>
+
+  </header>
+
+
+  <main class="dashboard-container">
+
+    <section class="page-heading">
+
+      <p class="small-label">
+        TikiPay
+      </p>
+
+      <h1>
+        Movimientos
+      </h1>
+
+      <p class="page-description">
+        Consulta todas las operaciones de tu cuenta.
+      </p>
+
+    </section>
+
+
+    <section class="filters-card">
+
+      <input
+        type="search"
+        id="transactionSearch"
+        placeholder="Buscar movimiento..."
+      >
+
+
+      <select id="transactionFilter">
+
+        <option value="ALL">
+          Todos
+        </option>
+
+        <option value="TRANSFER">
+          Transferencias
+        </option>
+
+        <option value="SERVICE_PAYMENT">
+          Servicios
+        </option>
+
+        <option value="DEPOSIT">
+          Depósitos
+        </option>
+
+        <option value="WITHDRAWAL">
+          Retiros
+        </option>
+
+        <option value="ADMIN_CREDIT">
+          Créditos
+        </option>
+
+        <option value="ADMIN_DEBIT">
+          Ajustes
+        </option>
+
+      </select>
+
+    </section>
+
+
+    <section class="movement-summary">
+
+      <article class="summary-card">
+
+        <span>
+          Ingresos
+        </span>
+
+        <strong
+          id="totalIncome"
+          class="income-text"
+        >
+          Bs 0,00
+        </strong>
+
+      </article>
+
+
+      <article class="summary-card">
+
+        <span>
+          Egresos
+        </span>
+
+        <strong
+          id="totalExpenses"
+          class="expense-text"
+        >
+          Bs 0,00
+        </strong>
+
+      </article>
+
+    </section>
+
+
+    <section
+      id="transactionsList"
+      class="transactions-page-list"
+    >
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          ⇄
+        </div>
+
+        <h3>
+          Sin movimientos
+        </h3>
+
+        <p>
+          Tus operaciones aparecerán aquí.
+        </p>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <nav class="bottom-navigation">
+
+    <a
+      href="dashboard.html"
+      class="nav-item"
+    >
+      <span>⌂</span>
+      Inicio
+    </a>
+
+    <a
+      href="movimientos.html"
+      class="nav-item active"
+    >
+      <span>⇄</span>
+      Movimientos
+    </a>
+
+    <a
+      href="servicios.html"
+      class="nav-item"
+    >
+      <span>◈</span>
+      Servicios
+    </a>
+
+    <a
+      href="perfil.html"
+      class="nav-item"
+    >
+      <span>○</span>
+      Perfil
+    </a>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/movimientos.js"></script>
+
+</body>
+</html>

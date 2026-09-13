@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    TikiPay Access
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+
+  <style>
+
+    .access-container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 30px 20px 120px;
+    }
+
+
+    .access-hero {
+      position: relative;
+      overflow: hidden;
+
+      padding: 34px;
+
+      border-radius: 26px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #071d49,
+          #073b83,
+          #0576ae
+        );
+
+      color: white;
+
+      margin-bottom: 28px;
+    }
+
+
+    .access-hero::after {
+      content: "";
+
+      position: absolute;
+
+      width: 260px;
+      height: 260px;
+
+      right: -80px;
+      top: -100px;
+
+      border-radius: 50%;
+
+      background:
+        rgba(
+          34,
+          211,
+          238,
+          0.16
+        );
+    }
+
+
+    .access-hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 600px;
+    }
+
+
+    .access-web3-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      padding: 6px 10px;
+
+      border-radius: 999px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.12
+        );
+
+      font-size: 11px;
+      font-weight: 800;
+
+      margin-bottom: 14px;
+    }
+
+
+    .access-hero h1 {
+      margin: 0 0 9px;
+
+      font-size: 34px;
+    }
+
+
+    .access-hero p {
+      margin: 0;
+
+      max-width: 560px;
+
+      color:
+        rgba(
+          255,
+          255,
+          255,
+          0.82
+        );
+
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+
+    .access-section {
+      margin-top: 30px;
+    }
+
+
+    .access-section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      gap: 16px;
+
+      margin-bottom: 16px;
+    }
+
+
+    .access-section-heading h2 {
+      margin: 0;
+
+      color: #0f172a;
+      font-size: 22px;
+    }
+
+
+    .access-section-heading p {
+      margin: 5px 0 0;
+
+      color: #64748b;
+      font-size: 13px;
+    }
+
+
+    .access-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(0, 1fr)
+        );
+
+      gap: 16px;
+    }
+
+
+    .access-card {
+      display: flex;
+      flex-direction: column;
+
+      min-height: 300px;
+
+      padding: 20px;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius: 20px;
+
+      background: white;
+
+      box-shadow:
+        0 10px 30px
+        rgba(15, 23, 42, 0.04);
+    }
+
+
+    .access-card-icon {
+      width: 48px;
+      height: 48px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 15px;
+
+      background: #eff6ff;
+
+      font-size: 22px;
+
+      margin-bottom: 16px;
+    }
+
+
+    .access-provider {
+      color: #0891b2;
+
+      font-size: 10px;
+      font-weight: 900;
+
+      text-transform: uppercase;
+    }
+
+
+    .access-card h3 {
+      margin: 6px 0 8px;
+
+      color: #0f172a;
+      font-size: 17px;
+    }
+
+
+    .access-card-description {
+      flex: 1;
+
+      margin: 0 0 15px;
+
+      color: #64748b;
+
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+
+    .access-price {
+      display: block;
+
+      margin-bottom: 14px;
+
+      color: #0f172a;
+
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+
+    .access-network {
+      margin-bottom: 13px;
+
+      color: #64748b;
+      font-size: 11px;
+    }
+
+
+    .access-button {
+      width: 100%;
+
+      min-height: 43px;
+
+      border: none;
+
+      border-radius: 11px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #0f62e8,
+          #06b6d4
+        );
+
+      color: white;
+
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+
+    .access-button:disabled {
+      background: #e2e8f0;
+      color: #64748b;
+
+      cursor: not-allowed;
+    }
+
+
+    .my-access-card {
+      padding: 20px;
+
+      border:
+        1px solid
+        #bbf7d0;
+
+      border-radius: 20px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #ffffff,
+          #f0fdf4
+        );
+    }
+
+
+    .my-access-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+
+      gap: 14px;
+    }
+
+
+    .my-access-card h3 {
+      margin: 0 0 5px;
+
+      color: #0f172a;
+    }
+
+
+    .my-access-card p {
+      margin: 4px 0;
+
+      color: #64748b;
+
+      font-size: 12px;
+    }
+
+
+    .access-status {
+      display: inline-flex;
+
+      padding: 5px 9px;
+
+      border-radius: 999px;
+
+      font-size: 10px;
+      font-weight: 900;
+
+      text-transform: uppercase;
+    }
+
+
+    .access-status.active {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+
+    .access-status.pending {
+      background: #fef3c7;
+      color: #a16207;
+    }
+
+
+    .access-status.expired {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+
+    .access-status.revoked {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+
+    .access-empty {
+      grid-column: 1 / -1;
+
+      padding: 48px 20px;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius: 20px;
+
+      background: white;
+
+      text-align: center;
+    }
+
+
+    .access-empty-icon {
+      width: 60px;
+      height: 60px;
+
+      margin:
+        0 auto 14px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 18px;
+
+      background: #eff6ff;
+
+      font-size: 27px;
+    }
+
+
+    .access-empty h3 {
+      margin: 0 0 7px;
+
+      color: #0f172a;
+    }
+
+
+    .access-empty p {
+      margin: 0;
+
+      color: #64748b;
+
+      font-size: 13px;
+    }
+
+
+    .access-message {
+      min-height: 18px;
+
+      margin-top: 18px;
+
+      text-align: center;
+
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+
+    .access-message.error {
+      color: #dc2626;
+    }
+
+
+    .access-message.success {
+      color: #059669;
+    }
+
+
+    .access-security-note {
+      margin-top: 28px;
+
+      padding: 17px;
+
+      border-radius: 15px;
+
+      background: #f8fafc;
+
+      color: #64748b;
+
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+
+    @media (
+      max-width: 820px
+    ) {
+
+      .access-grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          );
+      }
+
+    }
+
+
+    @media (
+      max-width: 580px
+    ) {
+
+      .access-container {
+        padding:
+          22px
+          16px
+          110px;
+      }
+
+
+      .access-hero {
+        padding: 26px 22px;
+      }
+
+
+      .access-hero h1 {
+        font-size: 28px;
+      }
+
+
+      .access-grid {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body class="app-page">
+
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        class="header-logo"
+        alt="TikiPay"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <a
+      href="dashboard.html"
+      class="icon-button"
+      aria-label="Volver"
+    >
+      ←
+    </a>
+
+  </header>
+
+
+  <main class="access-container">
+
+
+    <!-- ==================================================
+         HERO
+    =================================================== -->
+
+    <section class="access-hero">
+
+      <div class="access-hero-content">
+
+        <span class="access-web3-label">
+          🔓 Powered by Web3
+        </span>
+
+        <h1>
+          TikiPay Access
+        </h1>
+
+        <p>
+          Membresías, cursos, eventos, tickets,
+          certificaciones y contenido premium.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         MIS ACCESOS
+    =================================================== -->
+
+    <section class="access-section">
+
+      <div class="access-section-heading">
+
+        <div>
+
+          <h2>
+            Mis accesos
+          </h2>
+
+          <p>
+            Tus membresías y experiencias activas.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="myAccessGrid"
+        class="access-grid"
+      >
+
+        <div class="access-empty">
+
+          <div class="access-empty-icon">
+            🔐
+          </div>
+
+          <h3>
+            Cargando...
+          </h3>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         CATÁLOGO
+    =================================================== -->
+
+    <section class="access-section">
+
+      <div class="access-section-heading">
+
+        <div>
+
+          <h2>
+            Explorar
+          </h2>
+
+          <p>
+            Descubre experiencias disponibles en TikiPay Access.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="accessServicesGrid"
+        class="access-grid"
+      >
+
+        <div class="access-empty">
+
+          <div class="access-empty-icon">
+            🔓
+          </div>
+
+          <h3>
+            Cargando...
+          </h3>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <div class="access-security-note">
+
+      TikiPay no solicitará tu frase semilla ni claves privadas.
+      Las compras Web3 se habilitarán únicamente mediante
+      una integración real y verificable con Unlock Protocol.
+
+    </div>
+
+
+    <p
+      id="accessMessage"
+      class="access-message"
+    ></p>
+
+
+  </main>
+
+
+  <nav class="bottom-navigation">
+
+    <a
+      href="dashboard.html"
+      class="nav-item"
+    >
+      <span>⌂</span>
+      Inicio
+    </a>
+
+    <a
+      href="movimientos.html"
+      class="nav-item"
+    >
+      <span>⇄</span>
+      Movimientos
+    </a>
+
+    <a
+      href="servicios.html"
+      class="nav-item"
+    >
+      <span>◈</span>
+      Servicios
+    </a>
+
+    <a
+      href="perfil.html"
+      class="nav-item"
+    >
+      <span>○</span>
+      Perfil
+    </a>
+
+  </nav>
+
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+  <script
+    src="js/i18n.js"
+  ></script>
+
+  <script
+    src="js/access.js"
+  ></script>
+
+
+</body>
+
+</html>

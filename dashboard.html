@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Inicio | TikiPay
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+</head>
+
+
+<body class="app-page">
+
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        alt="TikiPay"
+        class="header-logo"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <div class="header-actions">
+
+      <a
+        href="notificaciones.html"
+        class="icon-button"
+        aria-label="Notificaciones"
+      >
+
+        🔔
+
+        <span
+          id="notificationBadge"
+          class="notification-badge"
+        ></span>
+
+      </a>
+
+
+      <a
+        href="perfil.html"
+        class="profile-button"
+        aria-label="Perfil"
+      >
+
+        <span id="profileInitial">
+          T
+        </span>
+
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==================================================
+       CONTENIDO
+  =================================================== -->
+
+  <main class="dashboard-container">
+
+
+    <!-- ==================================================
+         BIENVENIDA
+    =================================================== -->
+
+    <section class="welcome-section">
+
+      <p class="welcome-label">
+        Hola,
+      </p>
+
+      <h1 id="welcomeName">
+        Usuario
+      </h1>
+
+      <p
+        id="tikiId"
+        class="tiki-id"
+      >
+        TIKI-XXXXXXXXXXXX
+      </p>
+
+    </section>
+
+
+    <!-- ==================================================
+         SALDO
+    =================================================== -->
+
+    <section class="balance-card">
+
+      <div class="balance-top">
+
+        <div>
+
+          <p class="balance-label">
+            Saldo disponible
+          </p>
+
+
+          <div class="balance-row">
+
+            <h2 id="balanceAmount">
+              Bs 0,00
+            </h2>
+
+
+            <button
+              id="toggleBalance"
+              class="balance-eye"
+              type="button"
+              aria-label="Mostrar u ocultar saldo"
+            >
+              👁
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <span
+          id="accountStatus"
+          class="account-status active"
+        >
+          Activa
+        </span>
+
+      </div>
+
+
+      <div class="balance-footer">
+
+        <div>
+
+          <span>
+            Saldo congelado
+          </span>
+
+          <strong id="frozenBalance">
+            Bs 0,00
+          </strong>
+
+        </div>
+
+
+        <a href="movimientos.html">
+          Ver movimientos →
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ACCIONES RÁPIDAS
+    =================================================== -->
+
+    <section class="quick-actions">
+
+
+      <a
+        href="enviar.html"
+        class="main-action"
+      >
+
+        <span class="action-icon">
+          ↑
+        </span>
+
+        <span>
+          Enviar dinero
+        </span>
+
+      </a>
+
+
+      <a
+        href="recibir.html"
+        class="main-action"
+      >
+
+        <span class="action-icon">
+          ↓
+        </span>
+
+        <span>
+          Recibir
+        </span>
+
+      </a>
+
+
+      <a
+        href="recibir.html#qr"
+        class="main-action"
+      >
+
+        <span class="action-icon">
+          ▦
+        </span>
+
+        <span>
+          QR
+        </span>
+
+      </a>
+
+
+      <a
+        href="servicios.html"
+        class="main-action"
+      >
+
+        <span class="action-icon">
+          ◈
+        </span>
+
+        <span>
+          Servicios
+        </span>
+
+      </a>
+
+    </section>
+
+
+    <!-- ==================================================
+         SERVICIOS TIKIPAY
+    =================================================== -->
+
+    <section class="dashboard-section">
+
+      <div class="section-title">
+
+        <div>
+
+          <p class="small-label">
+            Servicios TikiPay
+          </p>
+
+          <h2>
+            ¿Qué quieres hacer?
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="feature-grid">
+
+
+        <!-- PAGAR SERVICIOS -->
+
+        <a
+          href="servicios.html"
+          class="feature-card"
+        >
+
+          <div class="feature-icon">
+            💡
+          </div>
+
+          <h3>
+            Pagar servicios
+          </h3>
+
+          <p>
+            Electricidad, agua, internet y más.
+          </p>
+
+        </a>
+
+
+        <!-- TRANSFERIR -->
+
+        <a
+          href="enviar.html"
+          class="feature-card"
+        >
+
+          <div class="feature-icon">
+            💸
+          </div>
+
+          <h3>
+            Transferir
+          </h3>
+
+          <p>
+            Envía saldo a otros usuarios TikiPay.
+          </p>
+
+        </a>
+
+
+        <!-- TIKIPAY ACCESS -->
+
+        <a
+          href="access.html"
+          class="feature-card premium-card"
+        >
+
+          <div class="feature-icon">
+            🔓
+          </div>
+
+          <h3>
+            TikiPay Access
+          </h3>
+
+          <p>
+            Membresías, cursos, eventos y contenido premium.
+          </p>
+
+          <span class="new-badge">
+            Web3
+          </span>
+
+        </a>
+
+
+        <!-- MOVIMIENTOS -->
+
+        <a
+          href="movimientos.html"
+          class="feature-card"
+        >
+
+          <div class="feature-icon">
+            ⇄
+          </div>
+
+          <h3>
+            Movimientos
+          </h3>
+
+          <p>
+            Consulta tu historial completo.
+          </p>
+
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         ACTIVIDAD RECIENTE
+    =================================================== -->
+
+    <section class="dashboard-section">
+
+      <div class="section-title">
+
+        <h2>
+          Actividad reciente
+        </h2>
+
+        <a href="movimientos.html">
+          Ver todo
+        </a>
+
+      </div>
+
+
+      <div
+        id="recentTransactions"
+        class="transactions-preview"
+      >
+
+        <div class="empty-state">
+
+          <div class="empty-icon">
+            ⇄
+          </div>
+
+          <h3>
+            Sin movimientos
+          </h3>
+
+          <p>
+            Tus últimas operaciones aparecerán aquí.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- ==================================================
+       NAVEGACIÓN INFERIOR
+  =================================================== -->
+
+  <nav class="bottom-navigation">
+
+
+    <a
+      href="dashboard.html"
+      class="nav-item active"
+    >
+
+      <span>
+        ⌂
+      </span>
+
+      Inicio
+
+    </a>
+
+
+    <a
+      href="movimientos.html"
+      class="nav-item"
+    >
+
+      <span>
+        ⇄
+      </span>
+
+      Movimientos
+
+    </a>
+
+
+    <a
+      href="servicios.html"
+      class="nav-item"
+    >
+
+      <span>
+        ◈
+      </span>
+
+      Servicios
+
+    </a>
+
+
+    <a
+      href="perfil.html"
+      class="nav-item"
+    >
+
+      <span>
+        ○
+      </span>
+
+      Perfil
+
+    </a>
+
+
+  </nav>
+
+
+  <!-- ==================================================
+       JAVASCRIPT
+  =================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+  <script
+    src="js/i18n.js"
+  ></script>
+
+  <script
+    src="js/dashboard.js"
+  ></script>
+
+
+</body>
+
+</html>

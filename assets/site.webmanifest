@@ -1,0 +1,22 @@
+{
+  "name": "TikiPay",
+  "short_name": "TikiPay",
+  "description": "Pagos, servicios y experiencias digitales con TikiPay.",
+  "start_url": "../index.html",
+  "display": "standalone",
+  "background_color": "#061a49",
+  "theme_color": "#0756d8",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
