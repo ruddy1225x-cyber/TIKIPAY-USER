@@ -3,7 +3,7 @@ console.log("✅ TikiPay services.js está cargando");
 
 // ======================================================
 // TIKIPAY - SERVICIOS + PAGOS REALES
-// Mantiene el diseño original de TikiPay
+// Diseño original + comprobante profesional
 // ======================================================
 
 let serviceCategories = [];
@@ -362,7 +362,7 @@ function renderCategories() {
 
 
   // --------------------------------------------------
-  // CATEGORÍAS SUPABASE
+  // CATEGORÍAS
   // --------------------------------------------------
 
   serviceCategories.forEach(
@@ -486,10 +486,6 @@ function renderServices(
   }
 
 
-  // --------------------------------------------------
-  // SIN SERVICIOS
-  // --------------------------------------------------
-
   if (
     !services ||
     services.length === 0
@@ -524,10 +520,6 @@ function renderServices(
     "";
 
 
-  // --------------------------------------------------
-  // TARJETAS
-  // --------------------------------------------------
-
   services.forEach(
     service => {
 
@@ -545,8 +537,6 @@ function renderServices(
         );
 
 
-      // IMPORTANTE:
-      // conservamos la clase original.
       card.className =
         "service-card";
 
@@ -810,6 +800,84 @@ function openService(
 
 
 // ======================================================
+// MODO VISUAL DEL MODAL
+// ======================================================
+
+function setPaymentSuccessMode(
+  success
+) {
+
+  const modal =
+    document.getElementById(
+      "servicePaymentModal"
+    );
+
+
+  if (!modal) {
+    return;
+  }
+
+
+  const selectors = [
+    ".tikipay-payment-icon",
+    ".tikipay-payment-label",
+    "#paymentServiceName",
+    "#paymentServiceProvider",
+    "#paymentBalanceRow",
+    "#paymentTotalRow",
+    "#paymentVariableWrapper",
+    "#confirmServicePayment",
+    ".tikipay-payment-security"
+  ];
+
+
+  selectors.forEach(
+    selector => {
+
+      modal
+        .querySelectorAll(
+          selector
+        )
+        .forEach(
+          element => {
+
+            if (success) {
+
+              element.style.display =
+                "none";
+
+            } else {
+
+              element.style.display =
+                "";
+
+            }
+
+          }
+        );
+
+    }
+  );
+
+
+  if (success) {
+
+    modal.classList.add(
+      "payment-success-mode"
+    );
+
+  } else {
+
+    modal.classList.remove(
+      "payment-success-mode"
+    );
+
+  }
+
+}
+
+
+// ======================================================
 // ABRIR MODAL DE PAGO
 // ======================================================
 
@@ -859,6 +927,12 @@ function openPaymentModal(
   }
 
 
+  // Restaurar formulario normal
+  setPaymentSuccessMode(
+    false
+  );
+
+
   const name =
     document.getElementById(
       "paymentServiceName"
@@ -871,9 +945,21 @@ function openPaymentModal(
     );
 
 
+  const balanceRow =
+    document.getElementById(
+      "paymentBalanceRow"
+    );
+
+
   const balance =
     document.getElementById(
       "paymentAvailableBalance"
+    );
+
+
+  const totalRow =
+    document.getElementById(
+      "paymentTotalRow"
     );
 
 
@@ -907,6 +993,12 @@ function openPaymentModal(
     );
 
 
+  const security =
+    modal.querySelector(
+      ".tikipay-payment-security"
+    );
+
+
   name.textContent =
     service.name;
 
@@ -923,12 +1015,24 @@ function openPaymentModal(
     );
 
 
+  balanceRow.style.display =
+    "flex";
+
+
   result.innerHTML =
     "";
 
 
   result.className =
     "tikipay-payment-result";
+
+
+  result.style.display =
+    "block";
+
+
+  confirmButton.style.display =
+    "block";
 
 
   confirmButton.disabled =
@@ -939,15 +1043,31 @@ function openPaymentModal(
     "Confirmar pago";
 
 
+  if (security) {
+
+    security.style.display =
+      "block";
+
+  }
+
+
   const fixedPrice =
     Number(
       service.price || 0
     );
 
 
+  // --------------------------------------------------
+  // PRECIO FIJO
+  // --------------------------------------------------
+
   if (
     fixedPrice > 0
   ) {
+
+    totalRow.style.display =
+      "flex";
+
 
     fixedAmount.style.display =
       "block";
@@ -967,10 +1087,20 @@ function openPaymentModal(
     variableInput.value =
       "";
 
-  } else {
+  }
 
-    fixedAmount.style.display =
+  // --------------------------------------------------
+  // MONTO VARIABLE
+  // --------------------------------------------------
+
+  else {
+
+    totalRow.style.display =
       "none";
+
+
+    fixedAmount.textContent =
+      "";
 
 
     variableWrapper.style.display =
@@ -1039,6 +1169,11 @@ function closePaymentModal() {
 
   modal.classList.remove(
     "open"
+  );
+
+
+  modal.classList.remove(
+    "payment-success-mode"
   );
 
 
@@ -1276,14 +1411,6 @@ async function confirmServicePayment() {
     );
 
 
-    button.disabled =
-      true;
-
-
-    button.textContent =
-      "Pago realizado";
-
-
     showServiceToast(
       "Pago realizado correctamente.",
       "success"
@@ -1311,8 +1438,14 @@ async function confirmServicePayment() {
 
 
     if (
-      button.textContent !==
-      "Pago realizado"
+      !document
+        .getElementById(
+          "servicePaymentModal"
+        )
+        ?.classList
+        .contains(
+          "payment-success-mode"
+        )
     ) {
 
       button.disabled =
@@ -1330,7 +1463,7 @@ async function confirmServicePayment() {
 
 
 // ======================================================
-// COMPROBANTE
+// COMPROBANTE PROFESIONAL
 // ======================================================
 
 function renderPaymentReceipt(
@@ -1348,6 +1481,19 @@ function renderPaymentReceipt(
   }
 
 
+  // --------------------------------------------------
+  // OCULTAR FORMULARIO
+  // --------------------------------------------------
+
+  setPaymentSuccessMode(
+    true
+  );
+
+
+  result.style.display =
+    "block";
+
+
   const paidAt =
     receipt.paid_at
       ?
@@ -1358,19 +1504,60 @@ function renderPaymentReceipt(
       new Date();
 
 
+  let formattedDate =
+    "";
+
+
+  try {
+
+    formattedDate =
+      paidAt.toLocaleString(
+        "es-BO",
+        {
+          dateStyle:
+            "medium",
+
+          timeStyle:
+            "short"
+        }
+      );
+
+  } catch {
+
+    formattedDate =
+      paidAt.toLocaleString(
+        "es-BO"
+      );
+
+  }
+
+
   result.className =
     "tikipay-payment-result success";
 
 
   result.innerHTML = `
 
-    <div class="tikipay-payment-success-icon">
-      ✓
+    <div class="tikipay-receipt-header">
+
+      <div class="tikipay-payment-success-icon">
+        ✓
+      </div>
+
+
+      <h3>
+        Pago completado
+      </h3>
+
+
+      <p>
+        Tu operación fue procesada correctamente.
+      </p>
+
     </div>
 
-    <h3>
-      Pago completado
-    </h3>
+
+    <div class="tikipay-receipt-divider"></div>
 
 
     <div class="tikipay-receipt-row">
@@ -1380,11 +1567,13 @@ function renderPaymentReceipt(
       </span>
 
       <strong>
+
         ${safeHTML(
           receipt.service_name ||
           selectedService?.name ||
           ""
         )}
+
       </strong>
 
     </div>
@@ -1397,11 +1586,13 @@ function renderPaymentReceipt(
       </span>
 
       <strong>
+
         ${safeHTML(
           receipt.provider ||
           selectedService?.provider ||
           "TikiPay"
         )}
+
       </strong>
 
     </div>
@@ -1410,16 +1601,18 @@ function renderPaymentReceipt(
     <div class="tikipay-receipt-row">
 
       <span>
-        Monto
+        Monto pagado
       </span>
 
-      <strong>
+      <strong class="tikipay-paid-amount">
+
         ${safeHTML(
           formatServiceMoney(
             receipt.amount,
             receipt.currency
           )
         )}
+
       </strong>
 
     </div>
@@ -1432,12 +1625,14 @@ function renderPaymentReceipt(
       </span>
 
       <strong>
+
         ${safeHTML(
           formatServiceMoney(
             receipt.balance_after,
             receipt.currency
           )
         )}
+
       </strong>
 
     </div>
@@ -1450,11 +1645,11 @@ function renderPaymentReceipt(
       </span>
 
       <strong>
+
         ${safeHTML(
-          paidAt.toLocaleString(
-            "es-BO"
-          )
+          formattedDate
         )}
+
       </strong>
 
     </div>
@@ -1462,13 +1657,27 @@ function renderPaymentReceipt(
 
     <div class="tikipay-payment-reference">
 
-      Operación:
+      <span>
+        ID de operación
+      </span>
 
-      ${safeHTML(
-        shortTransactionId(
-          receipt.transaction_id
-        )
-      )}
+      <strong>
+
+        ${safeHTML(
+          shortTransactionId(
+            receipt.transaction_id
+          )
+        )}
+
+      </strong>
+
+    </div>
+
+
+    <div class="tikipay-receipt-security">
+
+      🔒 Pago procesado de forma segura
+      mediante TikiPay
 
     </div>
 
@@ -1497,6 +1706,10 @@ function renderPaymentReceipt(
   `;
 
 
+  // --------------------------------------------------
+  // VER MOVIMIENTOS
+  // --------------------------------------------------
+
   document
     .getElementById(
       "paymentMovementsButton"
@@ -1511,6 +1724,10 @@ function renderPaymentReceipt(
       }
     );
 
+
+  // --------------------------------------------------
+  // FINALIZAR
+  // --------------------------------------------------
 
   document
     .getElementById(
@@ -1572,6 +1789,7 @@ function createPaymentModal() {
       class="tikipay-payment-modal"
       role="dialog"
       aria-modal="true"
+      aria-labelledby="paymentServiceName"
     >
 
       <button
@@ -1607,7 +1825,10 @@ function createPaymentModal() {
       </p>
 
 
-      <div class="tikipay-payment-detail">
+      <div
+        id="paymentBalanceRow"
+        class="tikipay-payment-detail"
+      >
 
         <span>
           Saldo disponible
@@ -1620,7 +1841,10 @@ function createPaymentModal() {
       </div>
 
 
-      <div class="tikipay-payment-detail">
+      <div
+        id="paymentTotalRow"
+        class="tikipay-payment-detail"
+      >
 
         <span>
           Total a pagar
@@ -1690,6 +1914,10 @@ function createPaymentModal() {
   );
 
 
+  // --------------------------------------------------
+  // CERRAR
+  // --------------------------------------------------
+
   document
     .getElementById(
       "closeServicePayment"
@@ -1700,6 +1928,10 @@ function createPaymentModal() {
     );
 
 
+  // --------------------------------------------------
+  // CONFIRMAR PAGO
+  // --------------------------------------------------
+
   document
     .getElementById(
       "confirmServicePayment"
@@ -1709,6 +1941,80 @@ function createPaymentModal() {
       confirmServicePayment
     );
 
+
+  // --------------------------------------------------
+  // ACTUALIZAR TOTAL EN MONTO VARIABLE
+  // --------------------------------------------------
+
+  document
+    .getElementById(
+      "paymentVariableAmount"
+    )
+    .addEventListener(
+      "input",
+      function () {
+
+        const row =
+          document.getElementById(
+            "paymentTotalRow"
+          );
+
+
+        const total =
+          document.getElementById(
+            "paymentFixedAmount"
+          );
+
+
+        const value =
+          Number(
+            String(
+              this.value || ""
+            )
+              .replace(
+                ",",
+                "."
+              )
+          );
+
+
+        if (
+          Number.isFinite(
+            value
+          )
+          &&
+          value > 0
+        ) {
+
+          row.style.display =
+            "flex";
+
+
+          total.style.display =
+            "block";
+
+
+          total.textContent =
+            formatServiceMoney(
+              value,
+              selectedService?.currency ||
+              "BOB"
+            );
+
+        } else {
+
+          row.style.display =
+            "none";
+
+        }
+
+      }
+    );
+
+
+  // --------------------------------------------------
+  // CLIC EN FONDO
+  // --------------------------------------------------
 
   modal.addEventListener(
     "click",
@@ -1726,6 +2032,10 @@ function createPaymentModal() {
     }
   );
 
+
+  // --------------------------------------------------
+  // ESC
+  // --------------------------------------------------
 
   document.addEventListener(
     "keydown",
@@ -1747,7 +2057,7 @@ function createPaymentModal() {
 
 
 // ======================================================
-// RESULTADOS DEL MODAL
+// RESULTADO DEL MODAL
 // ======================================================
 
 function showPaymentResult(
@@ -1854,7 +2164,7 @@ function showServiceToast(
 
 
 // ======================================================
-// TRADUCIR ERRORES
+// TRADUCIR ERRORES DEL RPC
 // ======================================================
 
 function translateServicePaymentError(
@@ -2285,8 +2595,8 @@ function safeHTML(
 
 
 // ======================================================
-// ESTILOS SOLO PARA EL MODAL DE PAGO
-// NO TOCA EL DISEÑO DE TARJETAS NI CATEGORÍAS
+// ESTILOS DEL MODAL DE PAGO
+// NO MODIFICA LAS TARJETAS ORIGINALES
 // ======================================================
 
 function injectPaymentModalStyles() {
@@ -2393,6 +2703,20 @@ function injectPaymentModalStyles() {
           .28
         );
 
+      transition:
+        .25s ease;
+
+    }
+
+
+    .tikipay-payment-modal.payment-success-mode {
+
+      width:
+        min(
+          460px,
+          100%
+        );
+
     }
 
 
@@ -2430,6 +2754,9 @@ function injectPaymentModalStyles() {
 
       font-size:
         24px;
+
+      z-index:
+        2;
 
     }
 
@@ -2632,6 +2959,9 @@ function injectPaymentModalStyles() {
       width:
         100%;
 
+      min-height:
+        44px;
+
       padding:
         12px 14px;
 
@@ -2643,6 +2973,9 @@ function injectPaymentModalStyles() {
 
       cursor:
         pointer;
+
+      font-family:
+        inherit;
 
     }
 
@@ -2661,6 +2994,14 @@ function injectPaymentModalStyles() {
           #0877f9,
           #08b8c7
         );
+
+    }
+
+
+    .tikipay-payment-primary:hover:not(:disabled) {
+
+      filter:
+        brightness(.98);
 
     }
 
@@ -2742,20 +3083,40 @@ function injectPaymentModalStyles() {
     .tikipay-payment-result.success {
 
       padding:
-        16px;
+        19px;
 
       border:
         1px solid
         #b9eccf;
 
       border-radius:
-        15px;
+        17px;
 
       background:
-        #f2fff7;
+        linear-gradient(
+          180deg,
+          #f4fff8,
+          #edfbf3
+        );
 
       text-align:
         left;
+
+      animation:
+        tikipayReceiptAppear
+        .28s
+        ease;
+
+    }
+
+
+    .tikipay-receipt-header {
+
+      text-align:
+        center;
+
+      padding:
+        2px 0 8px;
 
     }
 
@@ -2763,13 +3124,13 @@ function injectPaymentModalStyles() {
     .tikipay-payment-success-icon {
 
       width:
-        42px;
+        48px;
 
       height:
-        42px;
+        48px;
 
       margin:
-        0 auto 7px;
+        0 auto;
 
       display:
         grid;
@@ -2781,30 +3142,71 @@ function injectPaymentModalStyles() {
         50%;
 
       background:
-        #0da85a;
+        linear-gradient(
+          135deg,
+          #0eb663,
+          #02964e
+        );
 
       color:
         #ffffff;
 
       font-size:
-        22px;
+        25px;
 
       font-weight:
         900;
 
+      box-shadow:
+        0 9px 22px
+        rgba(
+          13,
+          174,
+          93,
+          .22
+        );
+
     }
 
 
-    .tikipay-payment-result.success h3 {
+    .tikipay-receipt-header h3 {
 
       margin:
-        0 0 12px;
-
-      text-align:
-        center;
+        11px 0 5px !important;
 
       color:
-        #087844;
+        #087844 !important;
+
+      font-size:
+        20px;
+
+    }
+
+
+    .tikipay-receipt-header p {
+
+      margin:
+        0;
+
+      color:
+        #6c8175;
+
+      font-size:
+        12px;
+
+    }
+
+
+    .tikipay-receipt-divider {
+
+      height:
+        1px;
+
+      background:
+        #d6eee0;
+
+      margin:
+        13px 0;
 
     }
 
@@ -2817,11 +3219,14 @@ function injectPaymentModalStyles() {
       justify-content:
         space-between;
 
+      align-items:
+        flex-start;
+
       gap:
-        12px;
+        16px;
 
       padding:
-        8px 0;
+        10px 0;
 
       border-top:
         1px solid
@@ -2829,6 +3234,22 @@ function injectPaymentModalStyles() {
 
       color:
         #547064;
+
+    }
+
+
+    .tikipay-receipt-row:first-of-type {
+
+      border-top:
+        none;
+
+    }
+
+
+    .tikipay-receipt-row span {
+
+      flex:
+        0 0 auto;
 
     }
 
@@ -2841,22 +3262,87 @@ function injectPaymentModalStyles() {
       text-align:
         right;
 
+      word-break:
+        break-word;
+
+    }
+
+
+    .tikipay-paid-amount {
+
+      color:
+        #078847 !important;
+
+      font-size:
+        16px;
+
     }
 
 
     .tikipay-payment-reference {
 
-      margin:
-        11px 0;
+      display:
+        flex;
 
-      text-align:
+      justify-content:
+        space-between;
+
+      align-items:
         center;
 
+      gap:
+        12px;
+
+      padding:
+        12px 0;
+
+      border-top:
+        1px solid
+        #d6eee0;
+
       color:
-        #72867c;
+        #71867b;
 
       font-size:
         10px;
+
+    }
+
+
+    .tikipay-payment-reference strong {
+
+      color:
+        #4f6a5d;
+
+      font-family:
+        monospace;
+
+    }
+
+
+    .tikipay-receipt-security {
+
+      margin:
+        4px 0
+        15px;
+
+      padding:
+        10px 12px;
+
+      border-radius:
+        10px;
+
+      background:
+        #e3f8ed;
+
+      color:
+        #347354;
+
+      font-size:
+        10px;
+
+      text-align:
+        center;
 
     }
 
@@ -2873,7 +3359,7 @@ function injectPaymentModalStyles() {
         8px;
 
       margin-top:
-        12px;
+        7px;
 
     }
 
@@ -2989,6 +3475,35 @@ function injectPaymentModalStyles() {
     }
 
 
+    @keyframes tikipayReceiptAppear {
+
+      from {
+
+        opacity:
+          0;
+
+        transform:
+          translateY(
+            8px
+          );
+
+      }
+
+      to {
+
+        opacity:
+          1;
+
+        transform:
+          translateY(
+            0
+          );
+
+      }
+
+    }
+
+
     @media (
       max-width:
       600px
@@ -3005,10 +3520,26 @@ function injectPaymentModalStyles() {
       }
 
 
+      .tikipay-payment-result.success {
+
+        padding:
+          15px;
+
+      }
+
+
       .tikipay-receipt-actions {
 
         grid-template-columns:
           1fr;
+
+      }
+
+
+      .tikipay-receipt-row {
+
+        gap:
+          10px;
 
       }
 
@@ -3025,7 +3556,7 @@ function injectPaymentModalStyles() {
 
 
 // ======================================================
-// INICIAR SERVICIOS
+// INICIAR
 // ======================================================
 
 initServices();
