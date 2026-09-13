@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Billetera | TikiPay</title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+  <style>
+
+    .wallet-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 22px 18px 110px;
+    }
+
+    .wallet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .wallet-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      color: #083b78;
+      font-size: 20px;
+    }
+
+    .wallet-brand img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+    }
+
+    .wallet-back {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid #d9e3ef;
+      background: white;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .wallet-hero {
+      border-radius: 24px;
+      padding: 26px;
+      color: white;
+      background:
+        linear-gradient(
+          135deg,
+          #082f67,
+          #0066b3,
+          #08b8cf
+        );
+      box-shadow:
+        0 16px 40px
+        rgba(4, 59, 120, .18);
+      margin-bottom: 22px;
+    }
+
+    .wallet-hero-label {
+      font-size: 13px;
+      opacity: .85;
+      margin-bottom: 8px;
+    }
+
+    .wallet-balance-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .wallet-balance {
+      font-size: 34px;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    .wallet-eye {
+      border: 0;
+      background: rgba(255,255,255,.14);
+      color: white;
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .wallet-id {
+      margin-top: 18px;
+      font-size: 13px;
+      opacity: .9;
+    }
+
+    .wallet-actions {
+      display: grid;
+      grid-template-columns:
+        repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .wallet-action {
+      text-decoration: none;
+      text-align: center;
+      color: white;
+      background:
+        rgba(255,255,255,.13);
+      border:
+        1px solid
+        rgba(255,255,255,.18);
+      padding: 13px 7px;
+      border-radius: 15px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .wallet-section {
+      margin-top: 24px;
+    }
+
+    .wallet-section h2 {
+      margin: 0 0 12px;
+      font-size: 19px;
+      color: #0c1728;
+    }
+
+    .wallet-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .wallet-card {
+      background: white;
+      border:
+        1px solid #dfe8f3;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow:
+        0 8px 25px
+        rgba(13, 58, 105, .05);
+    }
+
+    .wallet-card-title {
+      color: #667085;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .wallet-card-value {
+      color: #0c1728;
+      font-size: 17px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .wallet-card-small {
+      margin-top: 7px;
+      font-size: 12px;
+      color: #667085;
+    }
+
+    .wallet-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 10px;
+    }
+
+    .wallet-status.ok {
+      background: #e9fbef;
+      color: #087c37;
+    }
+
+    .wallet-status.off {
+      background: #f1f4f8;
+      color: #667085;
+    }
+
+    .wallet-connect {
+      width: 100%;
+      margin-top: 14px;
+      border: 0;
+      border-radius: 14px;
+      padding: 13px;
+      background:
+        linear-gradient(
+          90deg,
+          #1264e8,
+          #08b8cf
+        );
+      color: white;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .wallet-access {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .wallet-access + .wallet-access {
+      border-top: 1px solid #edf1f5;
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+
+    .wallet-access-name {
+      font-weight: 800;
+      color: #0c1728;
+    }
+
+    .wallet-access-meta {
+      color: #667085;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .wallet-active-badge {
+      white-space: nowrap;
+      background: #e9fbef;
+      color: #087c37;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .wallet-message {
+      min-height: 20px;
+      margin-top: 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .wallet-message.error {
+      color: #c62828;
+    }
+
+    .wallet-message.success {
+      color: #087c37;
+    }
+
+    .wallet-bottom-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      min-height: 68px;
+      display: flex;
+      justify-content: center;
+      background: rgba(255,255,255,.96);
+      border-top: 1px solid #e5ebf2;
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .wallet-bottom-inner {
+      width: 100%;
+      max-width: 760px;
+      display: grid;
+      grid-template-columns:
+        repeat(5, 1fr);
+    }
+
+    .wallet-nav-link {
+      text-decoration: none;
+      color: #7b8794;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 10px;
+    }
+
+    .wallet-nav-link strong {
+      font-size: 17px;
+    }
+
+    .wallet-nav-link.active {
+      color: #0869c7;
+      font-weight: 800;
+    }
+
+    @media
+    (max-width: 620px) {
+
+      .wallet-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .wallet-balance {
+        font-size: 29px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <main class="wallet-page">
+
+    <header class="wallet-header">
+
+      <div class="wallet-brand">
+
+        <img
+          src="assets/logo.png"
+          alt="TikiPay"
+          onerror="this.style.display='none'"
+        >
+
+        <span>TikiPay</span>
+
+      </div>
+
+      <button
+        class="wallet-back"
+        type="button"
+        onclick="location.href='dashboard.html'"
+      >
+        ←
+      </button>
+
+    </header>
+
+
+    <section class="wallet-hero">
+
+      <div class="wallet-hero-label">
+        Saldo disponible
+      </div>
+
+      <div class="wallet-balance-row">
+
+        <h1
+          class="wallet-balance"
+          id="walletBalance"
+        >
+          Bs --,--
+        </h1>
+
+        <button
+          id="toggleWalletBalance"
+          class="wallet-eye"
+          type="button"
+          title="Mostrar u ocultar saldo"
+        >
+          👁
+        </button>
+
+      </div>
+
+      <div
+        class="wallet-id"
+        id="walletTikiId"
+      >
+        TIKI-ID: cargando...
+      </div>
+
+
+      <div class="wallet-actions">
+
+        <a
+          class="wallet-action"
+          href="enviar.html"
+        >
+          ↑ Enviar
+        </a>
+
+        <a
+          class="wallet-action"
+          href="recibir.html"
+        >
+          ↓ Recibir
+        </a>
+
+        <a
+          class="wallet-action"
+          href="movimientos.html"
+        >
+          ⇄ Movimientos
+        </a>
+
+      </div>
+
+    </section>
+
+
+    <section class="wallet-section">
+
+      <h2>Cuenta TikiPay</h2>
+
+      <div class="wallet-grid">
+
+        <article class="wallet-card">
+
+          <div class="wallet-card-title">
+            Titular
+          </div>
+
+          <div
+            class="wallet-card-value"
+            id="walletOwner"
+          >
+            Cargando...
+          </div>
+
+          <div
+            class="wallet-card-small"
+            id="walletEmail"
+          ></div>
+
+        </article>
+
+
+        <article class="wallet-card">
+
+          <div class="wallet-card-title">
+            Estado de cuenta
+          </div>
+
+          <div
+            class="wallet-card-value"
+            id="walletAccountStatus"
+          >
+            Cargando...
+          </div>
+
+          <span
+            class="wallet-status ok"
+            id="walletAccountBadge"
+          >
+            ● TikiPay
+          </span>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="wallet-section">
+
+      <h2>Wallet Web3</h2>
+
+      <div class="wallet-grid">
+
+        <article class="wallet-card">
+
+          <div class="wallet-card-title">
+            MetaMask
+          </div>
+
+          <div
+            class="wallet-card-value"
+            id="web3WalletAddress"
+          >
+            No conectada
+          </div>
+
+          <div
+            class="wallet-card-small"
+            id="web3Network"
+          >
+            Red: —
+          </div>
+
+          <span
+            class="wallet-status off"
+            id="web3Status"
+          >
+            ● Desconectada
+          </span>
+
+          <button
+            class="wallet-connect"
+            id="connectWalletButton"
+            type="button"
+          >
+            Conectar MetaMask
+          </button>
+
+        </article>
+
+
+        <article class="wallet-card">
+
+          <div class="wallet-card-title">
+            TikiPay Access
+          </div>
+
+          <div
+            class="wallet-card-value"
+            id="web3MembershipCount"
+          >
+            0 accesos
+          </div>
+
+          <div class="wallet-card-small">
+            Membresías verificadas mediante
+            Unlock Protocol.
+          </div>
+
+          <a
+            href="access.html"
+            class="wallet-connect"
+            style="
+              display:block;
+              text-decoration:none;
+              text-align:center;
+              box-sizing:border-box;
+            "
+          >
+            Ver TikiPay Access
+          </a>
+
+        </article>
+
+      </div>
+
+    </section>
+
+
+    <section class="wallet-section">
+
+      <h2>Membresías Web3</h2>
+
+      <div
+        class="wallet-card"
+        id="walletMemberships"
+      >
+        Cargando accesos...
+      </div>
+
+    </section>
+
+
+    <div
+      class="wallet-message"
+      id="walletMessage"
+    ></div>
+
+  </main>
+
+
+  <nav class="wallet-bottom-nav">
+
+    <div class="wallet-bottom-inner">
+
+      <a
+        class="wallet-nav-link"
+        href="dashboard.html"
+      >
+        <strong>⌂</strong>
+        Inicio
+      </a>
+
+      <a
+        class="wallet-nav-link active"
+        href="billetera.html"
+      >
+        <strong>◈</strong>
+        Billetera
+      </a>
+
+      <a
+        class="wallet-nav-link"
+        href="movimientos.html"
+      >
+        <strong>⇄</strong>
+        Movimientos
+      </a>
+
+      <a
+        class="wallet-nav-link"
+        href="servicios.html"
+      >
+        <strong>◇</strong>
+        Servicios
+      </a>
+
+      <a
+        class="wallet-nav-link"
+        href="perfil.html"
+      >
+        <strong>○</strong>
+        Perfil
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/billetera.js"></script>
+
+</body>
+
+</html>

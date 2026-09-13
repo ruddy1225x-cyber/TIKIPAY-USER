@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="TikiPay - Plataforma fintech para pagos, transferencias y membresías Web3."
+  >
+
+  <title>TikiPay | Pagos digitales + Web3</title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <style>
+
+    :root {
+      --navy: #062f68;
+      --blue: #086ad8;
+      --cyan: #0bb9d0;
+      --text: #101828;
+      --muted: #667085;
+      --line: #e1e8f0;
+      --bg: #f5f9fd;
+      --white: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        Arial,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
+    }
+
+    /* ==========================================
+       NAVBAR
+    ========================================== */
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background:
+        rgba(255,255,255,.92);
+      backdrop-filter:
+        blur(16px);
+      border-bottom:
+        1px solid var(--line);
+    }
+
+    .nav-inner {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--navy);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .nav-links a {
+      color: #475467;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 800;
+      transition: .2s ease;
+    }
+
+    .button-outline {
+      color: var(--blue);
+      border:
+        1px solid #c8d8eb;
+      background: white;
+    }
+
+    .button-primary {
+      color: white;
+      border: 0;
+      background:
+        linear-gradient(
+          90deg,
+          #1266e8,
+          #08b9d0
+        );
+      box-shadow:
+        0 8px 20px
+        rgba(18,102,232,.18);
+    }
+
+    .button:hover {
+      transform:
+        translateY(-1px);
+    }
+
+    /* ==========================================
+       HERO
+    ========================================== */
+
+    .hero {
+      padding:
+        76px 0 64px;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns:
+        1.12fr .88fr;
+      align-items: center;
+      gap: 54px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #e7f6ff;
+      color: #066ca9;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size:
+        clamp(
+          42px,
+          6vw,
+          72px
+        );
+      line-height: .98;
+      letter-spacing:
+        -2.5px;
+      margin:
+        0 0 23px;
+      color: #082d60;
+    }
+
+    .gradient-text {
+      background:
+        linear-gradient(
+          90deg,
+          #1264e8,
+          #06b9cf
+        );
+      -webkit-background-clip:
+        text;
+      color: transparent;
+    }
+
+    .hero-description {
+      max-width: 650px;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #758295;
+    }
+
+    /* ==========================================
+       MOCK WALLET
+    ========================================== */
+
+    .demo-shell {
+      position: relative;
+    }
+
+    .demo-glow {
+      position: absolute;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background:
+        #09bcd0;
+      opacity: .13;
+      filter:
+        blur(55px);
+      top: -35px;
+      right: -55px;
+    }
+
+    .demo-card {
+      position: relative;
+      background: white;
+      border:
+        1px solid #dbe6f2;
+      border-radius: 29px;
+      padding: 18px;
+      box-shadow:
+        0 28px 70px
+        rgba(17,66,116,.16);
+    }
+
+    .demo-window {
+      border-radius: 21px;
+      overflow: hidden;
+      background: #f5f9fd;
+    }
+
+    .demo-top {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 15px;
+      background: white;
+      border-bottom:
+        1px solid #e6edf4;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #d4dce6;
+    }
+
+    .demo-body {
+      padding: 18px;
+    }
+
+    .balance-card {
+      border-radius: 19px;
+      padding: 22px;
+      color: white;
+      background:
+        linear-gradient(
+          135deg,
+          #08336d,
+          #086cb7,
+          #09b8cd
+        );
+    }
+
+    .balance-label {
+      opacity: .8;
+      font-size: 11px;
+    }
+
+    .balance-value {
+      font-size: 30px;
+      font-weight: 900;
+      margin-top: 8px;
+    }
+
+    .balance-id {
+      margin-top: 13px;
+      font-size: 10px;
+      opacity: .85;
+    }
+
+    .mini-actions {
+      display: grid;
+      grid-template-columns:
+        repeat(3,1fr);
+      gap: 7px;
+      margin-top: 14px;
+    }
+
+    .mini-action {
+      padding: 9px 4px;
+      text-align: center;
+      border-radius: 10px;
+      background:
+        rgba(255,255,255,.14);
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .demo-row {
+      display: grid;
+      grid-template-columns:
+        repeat(2,1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .demo-mini-card {
+      padding: 14px;
+      background: white;
+      border:
+        1px solid #dfe7ef;
+      border-radius: 14px;
+    }
+
+    .demo-mini-title {
+      color: #758296;
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .demo-mini-value {
+      margin-top: 6px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    .status {
+      display: inline-flex;
+      margin-top: 7px;
+      padding: 4px 7px;
+      font-size: 8px;
+      border-radius: 999px;
+      color: #087c37;
+      background: #e8fbed;
+      font-weight: 900;
+    }
+
+    /* ==========================================
+       STATS
+    ========================================== */
+
+    .stats {
+      margin-top: -4px;
+      padding-bottom: 65px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(4,1fr);
+      background: white;
+      border:
+        1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    .stat {
+      padding: 25px;
+      text-align: center;
+      border-right:
+        1px solid var(--line);
+    }
+
+    .stat:last-child {
+      border-right: 0;
+    }
+
+    .stat strong {
+      display: block;
+      color: #073b79;
+      font-size: 23px;
+      margin-bottom: 5px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ==========================================
+       SECTIONS
+    ========================================== */
+
+    section {
+      scroll-margin-top:
+        90px;
+    }
+
+    .section {
+      padding:
+        74px 0;
+    }
+
+    .section-heading {
+      text-align: center;
+      max-width: 720px;
+      margin:
+        0 auto 42px;
+    }
+
+    .section-heading span {
+      color: #0879c3;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .section-heading h2 {
+      margin:
+        10px 0 12px;
+      font-size:
+        clamp(
+          30px,
+          4vw,
+          44px
+        );
+      color: #0a315f;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* FEATURES */
+
+    .features-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(3,1fr);
+      gap: 17px;
+    }
+
+    .feature-card {
+      padding: 25px;
+      background: white;
+      border:
+        1px solid var(--line);
+      border-radius: 20px;
+      transition: .2s;
+    }
+
+    .feature-card:hover {
+      transform:
+        translateY(-3px);
+      box-shadow:
+        0 14px 34px
+        rgba(25,71,117,.08);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      background:
+        linear-gradient(
+          135deg,
+          #e9f3ff,
+          #e6fbfd
+        );
+      margin-bottom: 17px;
+    }
+
+    .feature-card h3 {
+      margin:
+        0 0 9px;
+      color: #123d6a;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    /* WEB3 */
+
+    .web3-section {
+      background: #071c3c;
+      color: white;
+    }
+
+    .web3-grid {
+      display: grid;
+      grid-template-columns:
+        .9fr 1.1fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    .web3-box {
+      padding: 25px;
+      border-radius: 25px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(24,105,222,.25),
+          rgba(7,190,211,.15)
+        );
+      border:
+        1px solid
+        rgba(255,255,255,.13);
+    }
+
+    .web3-flow {
+      display: grid;
+      gap: 10px;
+    }
+
+    .flow-item {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 13px;
+      border-radius: 13px;
+      background:
+        rgba(255,255,255,.07);
+      font-size: 13px;
+    }
+
+    .flow-number {
+      min-width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      background:
+        linear-gradient(
+          135deg,
+          #1971f2,
+          #04bfd0
+        );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .web3-copy span {
+      color: #63e1ee;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .web3-copy h2 {
+      font-size:
+        clamp(
+          31px,
+          4vw,
+          47px
+        );
+      margin:
+        10px 0 17px;
+    }
+
+    .web3-copy p {
+      line-height: 1.7;
+      color: #b8c6d8;
+    }
+
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .tech-pill {
+      border:
+        1px solid
+        rgba(255,255,255,.15);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 10px;
+      color: #d7e5f6;
+    }
+
+    /* SECURITY */
+
+    .security-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(4,1fr);
+      gap: 14px;
+    }
+
+    .security-card {
+      background: white;
+      border:
+        1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .security-card strong {
+      display: block;
+      color: #103d6d;
+      margin-bottom: 7px;
+    }
+
+    .security-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* CTA */
+
+    .cta {
+      padding:
+        70px 0;
+    }
+
+    .cta-box {
+      background:
+        linear-gradient(
+          135deg,
+          #07336f,
+          #086fb7,
+          #08bace
+        );
+      border-radius: 28px;
+      color: white;
+      padding:
+        50px 35px;
+      text-align: center;
+    }
+
+    .cta-box h2 {
+      font-size:
+        clamp(
+          29px,
+          4vw,
+          44px
+        );
+      margin:
+        0 0 12px;
+    }
+
+    .cta-box p {
+      max-width: 650px;
+      margin:
+        0 auto 23px;
+      line-height: 1.6;
+      opacity: .9;
+    }
+
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cta-white {
+      color: #0866bd;
+      background: white;
+    }
+
+    .cta-glass {
+      color: white;
+      border:
+        1px solid
+        rgba(255,255,255,.3);
+      background:
+        rgba(255,255,255,.1);
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top:
+        1px solid var(--line);
+      padding:
+        35px 0;
+      background: white;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .footer-text {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    /* RESPONSIVE */
+
+    @media
+    (max-width: 900px) {
+
+      .hero-grid,
+      .web3-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .features-grid {
+        grid-template-columns:
+          repeat(2,1fr);
+      }
+
+      .security-grid {
+        grid-template-columns:
+          repeat(2,1fr);
+      }
+
+      .stats-grid {
+        grid-template-columns:
+          repeat(2,1fr);
+      }
+
+      .stat:nth-child(2) {
+        border-right: 0;
+      }
+
+      .stat:nth-child(-n+2) {
+        border-bottom:
+          1px solid var(--line);
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+    }
+
+    @media
+    (max-width: 600px) {
+
+      .hero {
+        padding-top: 42px;
+      }
+
+      .hero h1 {
+        letter-spacing: -1.5px;
+      }
+
+      .nav-actions
+      .button-outline {
+        display: none;
+      }
+
+      .features-grid,
+      .security-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        text-align: center;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <header class="navbar">
+
+    <div class="container nav-inner">
+
+      <a
+        class="brand"
+        href="landing.html"
+      >
+
+        <img
+          src="assets/logo.png"
+          alt="TikiPay"
+          onerror="this.style.display='none'"
+        >
+
+        TikiPay
+
+      </a>
+
+
+      <nav class="nav-links">
+
+        <a href="#funciones">
+          Funciones
+        </a>
+
+        <a href="#web3">
+          Web3
+        </a>
+
+        <a href="#seguridad">
+          Seguridad
+        </a>
+
+      </nav>
+
+
+      <div class="nav-actions">
+
+        <a
+          class="button button-outline"
+          href="login.html"
+        >
+          Iniciar sesión
+        </a>
+
+        <a
+          class="button button-primary"
+          href="registro.html"
+        >
+          Crear cuenta
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- HERO -->
+
+  <main>
+
+    <section class="hero">
+
+      <div class="container hero-grid">
+
+        <div>
+
+          <div class="eyebrow">
+            ✦ Pagos digitales + Web3
+          </div>
+
+          <h1>
+            Tu dinero.
+            <br>
+            Tu acceso.
+            <br>
+
+            <span class="gradient-text">
+              Tu TikiPay.
+            </span>
+          </h1>
+
+          <p class="hero-description">
+
+            Una plataforma fintech que combina
+            pagos digitales, transferencias,
+            servicios y membresías Web3 en una
+            experiencia sencilla y segura.
+
+          </p>
+
+          <div class="hero-actions">
+
+            <a
+              class="button button-primary"
+              href="registro.html"
+            >
+              Comenzar con TikiPay →
+            </a>
+
+            <a
+              class="button button-outline"
+              href="login.html"
+            >
+              Ya tengo una cuenta
+            </a>
+
+          </div>
+
+          <div class="hero-note">
+            ✓ Supabase · ✓ MetaMask · ✓ Unlock Protocol · ✓ Base Sepolia
+          </div>
+
+        </div>
+
+
+        <div class="demo-shell">
+
+          <div class="demo-glow"></div>
+
+          <div class="demo-card">
+
+            <div class="demo-window">
+
+              <div class="demo-top">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+
+              <div class="demo-body">
+
+                <div class="balance-card">
+
+                  <div class="balance-label">
+                    Saldo disponible
+                  </div>
+
+                  <div class="balance-value">
+                    Bs 90,00
+                  </div>
+
+                  <div class="balance-id">
+                    TIKI-ID · Cuenta protegida
+                  </div>
+
+                  <div class="mini-actions">
+
+                    <div class="mini-action">
+                      ↑ Enviar
+                    </div>
+
+                    <div class="mini-action">
+                      ↓ Recibir
+                    </div>
+
+                    <div class="mini-action">
+                      ⇄ Movimientos
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="demo-row">
+
+                  <div class="demo-mini-card">
+
+                    <div class="demo-mini-title">
+                      METAMASK
+                    </div>
+
+                    <div class="demo-mini-value">
+                      0x6318...2f4d
+                    </div>
+
+                    <span class="status">
+                      ● Conectada
+                    </span>
+
+                  </div>
+
+
+                  <div class="demo-mini-card">
+
+                    <div class="demo-mini-title">
+                      TIKIPAY ACCESS
+                    </div>
+
+                    <div class="demo-mini-value">
+                      Membership #1
+                    </div>
+
+                    <span class="status">
+                      ● Activa
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+      <div class="container">
+
+        <div class="stats-grid">
+
+          <div class="stat">
+            <strong>24/7</strong>
+            <span>
+              Plataforma digital
+            </span>
+          </div>
+
+          <div class="stat">
+            <strong>Web3</strong>
+            <span>
+              Accesos verificables
+            </span>
+          </div>
+
+          <div class="stat">
+            <strong>QR</strong>
+            <span>
+              Recepción rápida
+            </span>
+          </div>
+
+          <div class="stat">
+            <strong>2 idiomas</strong>
+            <span>
+              Español / English
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FUNCIONES -->
+
+    <section
+      class="section"
+      id="funciones"
+    >
+
+      <div class="container">
+
+        <div class="section-heading">
+
+          <span>
+            Plataforma
+          </span>
+
+          <h2>
+            Todo en una sola aplicación
+          </h2>
+
+          <p>
+            Herramientas diseñadas para simplificar
+            pagos digitales y conectar servicios
+            tradicionales con tecnología Web3.
+          </p>
+
+        </div>
+
+
+        <div class="features-grid">
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              💳
+            </div>
+
+            <h3>
+              Billetera TikiPay
+            </h3>
+
+            <p>
+              Consulta saldo, estado de cuenta,
+              TIKI-ID y wallet Web3 desde un solo lugar.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ⇄
+            </div>
+
+            <h3>
+              Transferencias
+            </h3>
+
+            <p>
+              Envía saldo entre usuarios TikiPay
+              mediante TIKI-ID o correo electrónico.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ▦
+            </div>
+
+            <h3>
+              Recibir con QR
+            </h3>
+
+            <p>
+              Comparte tu TIKI-ID mediante un código QR
+              para facilitar la recepción de pagos.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              🔔
+            </div>
+
+            <h3>
+              Notificaciones
+            </h3>
+
+            <p>
+              Consulta eventos importantes asociados
+              a tus transferencias y actividad.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ✦
+            </div>
+
+            <h3>
+              Asistente TikiPay
+            </h3>
+
+            <p>
+              Asistencia integrada para saldo,
+              seguridad, transferencias y Web3
+              sin exponer información sensible.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              🔓
+            </div>
+
+            <h3>
+              TikiPay Access
+            </h3>
+
+            <p>
+              Membresías, cursos y contenido
+              verificables mediante Unlock Protocol.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- WEB3 -->
+
+    <section
+      class="section web3-section"
+      id="web3"
+    >
+
+      <div class="container web3-grid">
+
+        <div class="web3-box">
+
+          <div class="web3-flow">
+
+            <div class="flow-item">
+              <span class="flow-number">1</span>
+              TikiPay conecta MetaMask
+            </div>
+
+            <div class="flow-item">
+              <span class="flow-number">2</span>
+              Unlock Protocol genera la Membership
+            </div>
+
+            <div class="flow-item">
+              <span class="flow-number">3</span>
+              Base Sepolia verifica la NFT
+            </div>
+
+            <div class="flow-item">
+              <span class="flow-number">4</span>
+              MetaMask firma propiedad de la wallet
+            </div>
+
+            <div class="flow-item">
+              <span class="flow-number">5</span>
+              Supabase sincroniza el acceso
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="web3-copy">
+
+          <span>
+            TIKIPAY ACCESS
+          </span>
+
+          <h2>
+            Membresías verificables
+            en blockchain
+          </h2>
+
+          <p>
+            TikiPay integra Unlock Protocol,
+            MetaMask y Base Sepolia para comprobar
+            membresías Web3. El usuario demuestra
+            control de su wallet mediante una firma
+            criptográfica antes de sincronizar el
+            acceso con TikiPay.
+          </p>
+
+          <div class="tech-pills">
+
+            <span class="tech-pill">
+              Unlock Protocol
+            </span>
+
+            <span class="tech-pill">
+              MetaMask
+            </span>
+
+            <span class="tech-pill">
+              Base Sepolia
+            </span>
+
+            <span class="tech-pill">
+              Ethers.js
+            </span>
+
+            <span class="tech-pill">
+              Supabase
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- SEGURIDAD -->
+
+    <section
+      class="section"
+      id="seguridad"
+    >
+
+      <div class="container">
+
+        <div class="section-heading">
+
+          <span>
+            Seguridad
+          </span>
+
+          <h2>
+            Diseñado con separación
+            de responsabilidades
+          </h2>
+
+          <p>
+            Las operaciones sensibles no dependen
+            únicamente del navegador.
+          </p>
+
+        </div>
+
+
+        <div class="security-grid">
+
+          <div class="security-card">
+
+            <strong>
+              🔐 Autenticación
+            </strong>
+
+            <span>
+              Gestión de sesiones y cuentas
+              mediante Supabase Auth.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              🧾 Ledger
+            </strong>
+
+            <span>
+              Transferencias respaldadas por
+              registros de transacción.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              ✍ Firma Web3
+            </strong>
+
+            <span>
+              La wallet demuestra propiedad
+              mediante firma de MetaMask.
+            </span>
+
+          </div>
+
+
+          <div class="security-card">
+
+            <strong>
+              ⛓ Blockchain
+            </strong>
+
+            <span>
+              Membresías verificadas directamente
+              en Base Sepolia.
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section class="cta">
+
+      <div class="container">
+
+        <div class="cta-box">
+
+          <h2>
+            Una nueva experiencia
+            para pagos y accesos digitales
+          </h2>
+
+          <p>
+            Explora TikiPay y descubre cómo una
+            plataforma fintech puede integrar
+            servicios tradicionales y Web3.
+          </p>
+
+          <div class="cta-buttons">
+
+            <a
+              class="button cta-white"
+              href="registro.html"
+            >
+              Crear cuenta
+            </a>
+
+            <a
+              class="button cta-glass"
+              href="login.html"
+            >
+              Iniciar sesión
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+
+    <div class="container footer-inner">
+
+      <div class="brand">
+        TikiPay
+      </div>
+
+      <div class="footer-text">
+        MVP Fintech + Web3 · 2026
+      </div>
+
+    </div>
+
+  </footer>
+
+</body>
+
+</html>
