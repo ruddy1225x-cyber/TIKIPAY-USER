@@ -1,5 +1,6 @@
 // ======================================================
 // TIKIPAY - NOTIFICACIONES
+// Notificaciones normales + imágenes opcionales
 // ======================================================
 
 let notificationSession =
@@ -47,7 +48,9 @@ async function loadNotifications() {
         message,
         type,
         is_read,
-        created_at
+        created_at,
+        image_url,
+        image_alt
       `)
       .eq(
         "user_id",
@@ -78,6 +81,7 @@ async function loadNotifications() {
     renderNotifications(
       []
     );
+
 
     return;
   }
@@ -117,7 +121,7 @@ function renderNotifications(
 
 
   // ====================================================
-  // VACÍO
+  // SIN NOTIFICACIONES
   // ====================================================
 
   if (
@@ -163,7 +167,7 @@ function renderNotifications(
 
 
   // ====================================================
-  // TARJETAS
+  // CREAR TARJETAS
   // ====================================================
 
   notifications.forEach(
@@ -247,6 +251,14 @@ function renderNotifications(
           </p>
 
 
+          <!-- IMAGEN OPCIONAL -->
+
+          <div
+            class="notification-media"
+            hidden
+          ></div>
+
+
           <span class="notification-date">
 
             ${formatTikiDate(
@@ -278,6 +290,20 @@ function renderNotifications(
 
       `;
 
+
+      // ==================================================
+      // IMAGEN
+      // ==================================================
+
+      renderNotificationImage(
+        card,
+        notification
+      );
+
+
+      // ==================================================
+      // BOTÓN MARCAR COMO LEÍDA
+      // ==================================================
 
       const readButton =
         card.querySelector(
@@ -312,7 +338,174 @@ function renderNotifications(
 
 
 // ======================================================
-// MARCAR UNA COMO LEÍDA
+// MOSTRAR IMAGEN DE NOTIFICACIÓN
+// ======================================================
+
+function renderNotificationImage(
+  card,
+  notification
+) {
+
+  if (!card) {
+    return;
+  }
+
+
+  const media =
+    card.querySelector(
+      ".notification-media"
+    );
+
+
+  if (!media) {
+    return;
+  }
+
+
+  const imageUrl =
+    String(
+      notification?.image_url ||
+      ""
+    ).trim();
+
+
+  // ====================================================
+  // SIN IMAGEN
+  // ====================================================
+
+  if (!imageUrl) {
+
+    media.hidden =
+      true;
+
+    media.innerHTML =
+      "";
+
+    return;
+  }
+
+
+  // ====================================================
+  // PREPARAR CONTENEDOR
+  // ====================================================
+
+  /*
+    IMPORTANTE:
+
+    Lo mostramos ANTES de iniciar
+    la carga de la imagen.
+
+    La versión anterior lo mantenía
+    oculto esperando el evento "load".
+
+    En algunos navegadores móviles,
+    una imagen con loading="lazy"
+    dentro de un elemento hidden
+    puede no cargarse nunca.
+  */
+
+  media.hidden =
+    false;
+
+  media.innerHTML =
+    "";
+
+
+  // ====================================================
+  // CREAR IMAGEN
+  // ====================================================
+
+  const image =
+    document.createElement(
+      "img"
+    );
+
+
+  image.className =
+    "notification-image";
+
+
+  image.alt =
+    String(
+      notification?.image_alt ||
+      notification?.title ||
+      "Imagen informativa de TikiPay"
+    ).trim();
+
+
+  /*
+    Carga inmediata.
+
+    Para imágenes informativas de
+    notificaciones queremos que aparezcan
+    apenas se renderice la tarjeta.
+  */
+
+  image.loading =
+    "eager";
+
+
+  image.decoding =
+    "async";
+
+
+  // ====================================================
+  // CARGA CORRECTA
+  // ====================================================
+
+  image.addEventListener(
+    "load",
+    function () {
+
+      media.hidden =
+        false;
+
+    }
+  );
+
+
+  // ====================================================
+  // ERROR DE IMAGEN
+  // ====================================================
+
+  image.addEventListener(
+    "error",
+    function () {
+
+      console.warn(
+        "No se pudo cargar la imagen de notificación:",
+        imageUrl
+      );
+
+
+      media.hidden =
+        true;
+
+
+      image.remove();
+
+    }
+  );
+
+
+  /*
+    Primero insertamos el elemento
+    y después asignamos src.
+  */
+
+  media.appendChild(
+    image
+  );
+
+
+  image.src =
+    imageUrl;
+
+}
+
+
+// ======================================================
+// MARCAR UNA NOTIFICACIÓN COMO LEÍDA
 // ======================================================
 
 async function markNotificationAsRead(
@@ -351,6 +544,7 @@ async function markNotificationAsRead(
       "No se pudo actualizar la notificación.",
       "error"
     );
+
 
     return;
   }
@@ -437,6 +631,7 @@ async function markAllNotificationsAsRead() {
       "error"
     );
 
+
     return;
   }
 
@@ -488,7 +683,7 @@ if (markAllReadButton) {
 
 
 // ======================================================
-// ESTADO DEL BOTÓN
+// ACTUALIZAR ESTADO DEL BOTÓN LEER TODO
 // ======================================================
 
 function updateMarkAllButton() {
@@ -545,10 +740,25 @@ function notificationIcon(
   type
 ) {
 
+  const normalizedType =
+    String(
+      type ||
+      "GENERAL"
+    )
+      .trim()
+      .toUpperCase();
+
+
   const icons = {
 
     GENERAL:
       "🔔",
+
+    WELCOME:
+      "👋",
+
+    WELCOME_BONUS:
+      "🎁",
 
     TRANSFER:
       "💸",
@@ -559,11 +769,23 @@ function notificationIcon(
     TRANSFER_RECEIVED:
       "↓",
 
-    SECURITY:
-      "🔐",
+    QR_PAYMENT:
+      "▦",
+
+    QR_PAYMENT_SENT:
+      "▦",
+
+    QR_PAYMENT_RECEIVED:
+      "▦",
 
     SERVICE:
       "💡",
+
+    SERVICE_PAYMENT:
+      "💡",
+
+    SECURITY:
+      "🔐",
 
     ACCESS:
       "🔓",
@@ -575,13 +797,24 @@ function notificationIcon(
       "⚠️",
 
     SUCCESS:
-      "✅"
+      "✅",
+
+    PROMOTION:
+      "✨",
+
+    NEWS:
+      "📢",
+
+    INFO:
+      "ℹ️"
 
   };
 
 
   return (
-    icons[type] ||
+    icons[
+      normalizedType
+    ] ||
     "🔔"
   );
 
@@ -614,12 +847,12 @@ function translateNotificationText(
 
 
 // ======================================================
-// MENSAJES
+// MENSAJES DE LA PÁGINA
 // ======================================================
 
 function showNotificationMessage(
   text,
-  type
+  type = ""
 ) {
 
   const element =
@@ -640,19 +873,32 @@ function showNotificationMessage(
 
 
   element.className =
-    "notifications-message " +
-    type;
+    type
+      ?
+      "notifications-message " +
+      type
+      :
+      "notifications-message";
 
 
-  setTimeout(
-    function () {
-
-      element.textContent =
-        "";
-
-    },
-    3500
+  clearTimeout(
+    showNotificationMessage.timer
   );
+
+
+  showNotificationMessage.timer =
+    setTimeout(
+      function () {
+
+        element.textContent =
+          "";
+
+        element.className =
+          "notifications-message";
+
+      },
+      3500
+    );
 
 }
 

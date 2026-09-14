@@ -1,0 +1,7 @@
+assets/notifications/
+├── bienvenido1.png
+├── pagar-qr.png
+├── nuevos-servicios.png
+├── mantenimiento.png
+├── seguridad.png
+└── novedades.png
