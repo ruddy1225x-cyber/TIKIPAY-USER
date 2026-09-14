@@ -1,6 +1,6 @@
 // ======================================================
 // TIKIPAY - TRANSFERENCIAS
-// Transferencia normal + Pago mediante QR TikiPay
+// Transferencia normal + Pago QR seguro V2
 // ======================================================
 
 let transferSession = null;
@@ -66,7 +66,7 @@ async function initTransfers() {
 
 
 // ======================================================
-// CARGAR CUENTA
+// CUENTA
 // ======================================================
 
 async function loadTransferAccount() {
@@ -124,7 +124,7 @@ async function loadTransferAccount() {
 
 
 // ======================================================
-// MOSTRAR SALDO
+// SALDO
 // ======================================================
 
 function renderTransferBalance() {
@@ -153,7 +153,7 @@ function renderTransferBalance() {
 
 
 // ======================================================
-// VALIDAR ESTADO CUENTA
+// ESTADO CUENTA
 // ======================================================
 
 function validateAccountStatus() {
@@ -175,7 +175,10 @@ function validateAccountStatus() {
   ) {
 
     if (button) {
-      button.disabled = false;
+
+      button.disabled =
+        false;
+
     }
 
 
@@ -185,12 +188,15 @@ function validateAccountStatus() {
 
 
   if (button) {
-    button.disabled = true;
+
+    button.disabled =
+      true;
+
   }
 
 
   showTransferMessage(
-    "Tu cuenta no puede realizar transferencias actualmente.",
+    "Tu cuenta no puede realizar operaciones actualmente.",
     "error"
   );
 
@@ -198,7 +204,7 @@ function validateAccountStatus() {
 
 
 // ======================================================
-// DETECTAR MODO QR
+// DETECTAR QR
 // ======================================================
 
 async function initializeQrPaymentMode() {
@@ -245,8 +251,9 @@ async function initializeQrPaymentMode() {
   if (!raw) {
 
     invalidateQrPayment(
-      "No encontramos los datos del QR. Vuelve a escanearlo."
+      "No encontramos los datos del código QR. Vuelve a escanearlo."
     );
+
 
     return;
 
@@ -276,6 +283,7 @@ async function initializeQrPaymentMode() {
       "Los datos del código QR no son válidos."
     );
 
+
     return;
 
   }
@@ -300,7 +308,7 @@ async function initializeQrPaymentMode() {
 
 
   // ====================================================
-  // COMPATIBILIDAD CON QR V1
+  // QR LEGACY V1
   // ====================================================
 
   loadLegacyQrPayment(
@@ -311,7 +319,7 @@ async function initializeQrPaymentMode() {
 
 
 // ======================================================
-// QR V2 - VOLVER A VERIFICAR CON SUPABASE
+// CARGAR QR SEGURO V2
 // ======================================================
 
 async function loadSecureQrPayment(
@@ -334,8 +342,10 @@ async function loadSecureQrPayment(
         .rpc(
           "resolve_tikipay_payment_qr",
           {
+
             p_qr_id:
               qrId
+
           }
         );
 
@@ -390,7 +400,7 @@ async function loadSecureQrPayment(
     ) {
 
       invalidateQrPayment(
-        "El código QR no contiene un destinatario TikiPay válido."
+        "El código QR no contiene un destinatario válido."
       );
 
 
@@ -575,7 +585,7 @@ function loadLegacyQrPayment(
 
 
   showTransferMessage(
-    "QR TikiPay cargado. Revisa el monto antes de continuar.",
+    "QR TikiPay cargado.",
     "success"
   );
 
@@ -583,7 +593,7 @@ function loadLegacyQrPayment(
 
 
 // ======================================================
-// LLENAR FORMULARIO DESDE QR
+// RELLENAR FORMULARIO QR
 // ======================================================
 
 function populateQrTransferForm() {
@@ -663,11 +673,6 @@ function populateQrTransferForm() {
     }
 
 
-    /*
-      Si el creador del QR especificó un monto,
-      el usuario no debe cambiarlo desde la interfaz.
-    */
-
     if (
       qrPaymentContext.fixed_amount
     ) {
@@ -694,6 +699,11 @@ function populateQrTransferForm() {
       amountInput.readOnly =
         false;
 
+
+      amountInput.removeAttribute(
+        "aria-readonly"
+      );
+
     }
 
   }
@@ -719,7 +729,7 @@ function populateQrTransferForm() {
 
 
 // ======================================================
-// AVISO VISUAL QR
+// AVISO QR
 // ======================================================
 
 function createQrPaymentNotice() {
@@ -788,7 +798,6 @@ function createQrPaymentNotice() {
     >
       ▦
     </div>
-
 
     <div>
 
@@ -953,7 +962,7 @@ document
       ) {
 
         showTransferMessage(
-          "Tu cuenta no puede realizar transferencias actualmente.",
+          "Tu cuenta no puede realizar operaciones actualmente.",
           "error"
         );
 
@@ -964,7 +973,7 @@ document
 
 
       // ==================================================
-      // QR V2: VERIFICAR OTRA VEZ ANTES DE CONFIRMAR
+      // QR V2: REVALIDAR
       // ==================================================
 
       if (
@@ -1022,7 +1031,7 @@ document
 
 
       // ==================================================
-      // EN MODO QR, DESTINATARIO SIEMPRE DEL QR
+      // MODO QR
       // ==================================================
 
       if (
@@ -1044,9 +1053,7 @@ document
         }
 
 
-        if (
-          !description
-        ) {
+        if (!description) {
 
           description =
             qrPaymentContext.description
@@ -1059,7 +1066,7 @@ document
 
 
       // ==================================================
-      // VALIDAR DESTINATARIO
+      // VALIDACIONES
       // ==================================================
 
       if (!recipient) {
@@ -1074,10 +1081,6 @@ document
 
       }
 
-
-      // ==================================================
-      // VALIDAR MONTO
-      // ==================================================
 
       if (
         !Number.isFinite(
@@ -1097,25 +1100,16 @@ document
       }
 
 
-      // ==================================================
-      // DOS DECIMALES
-      // ==================================================
-
       amount =
         Math.round(
           amount * 100
         ) / 100;
 
 
-      // ==================================================
-      // SALDO
-      // ==================================================
-
       if (
         amount >
         Number(
-          transferAccount
-            .available_balance
+          transferAccount.available_balance
         )
       ) {
 
@@ -1140,12 +1134,20 @@ document
 
         source:
           qrPaymentMode
-            ? "QR"
-            : "TRANSFER",
+            ?
+            "QR"
+            :
+            "TRANSFER",
 
         qr_id:
           qrPaymentContext?.qr_id
-          || null
+          ||
+          null,
+
+        qr_version:
+          qrPaymentContext?.version
+          ||
+          null
 
       };
 
@@ -1157,7 +1159,7 @@ document
 
 
 // ======================================================
-// VOLVER A VALIDAR QR V2
+// REVALIDAR QR V2
 // ======================================================
 
 async function refreshSecureQrContext() {
@@ -1186,8 +1188,10 @@ async function refreshSecureQrContext() {
         .rpc(
           "resolve_tikipay_payment_qr",
           {
+
             p_qr_id:
               qrPaymentContext.qr_id
+
           }
         );
 
@@ -1206,10 +1210,12 @@ async function refreshSecureQrContext() {
 
       invalidateQrPayment(
         error
-          ? "No se pudo volver a verificar el QR."
-          : secureQrErrorMessage(
-              data
-            )
+          ?
+          "No se pudo volver a verificar el QR."
+          :
+          secureQrErrorMessage(
+            data
+          )
       );
 
 
@@ -1318,7 +1324,7 @@ async function refreshSecureQrContext() {
 
 
 // ======================================================
-// MOSTRAR CONFIRMACIÓN
+// MODAL CONFIRMACIÓN
 // ======================================================
 
 function showTransferConfirmation() {
@@ -1426,13 +1432,10 @@ function showTransferConfirmation() {
   }
 
 
-  const modal =
-    document.getElementById(
+  document
+    .getElementById(
       "transferModal"
-    );
-
-
-  modal
+    )
     ?.classList
     .add(
       "visible"
@@ -1451,16 +1454,12 @@ document
   )
   ?.addEventListener(
     "click",
-    function () {
-
-      closeTransferModal();
-
-    }
+    closeTransferModal
   );
 
 
 // ======================================================
-// CONFIRMAR TRANSFERENCIA / PAGO QR
+// CONFIRMAR OPERACIÓN
 // ======================================================
 
 document
@@ -1489,13 +1488,11 @@ document
           ?
           "Procesando pago..."
           :
-          translateTransferText(
-            "Procesando transferencia..."
-          );
+          "Procesando transferencia...";
 
 
       // ==================================================
-      // SI ES QR V2, COMPROBAR VIGENCIA UNA VEZ MÁS
+      // QR V2
       // ==================================================
 
       if (
@@ -1525,6 +1522,11 @@ document
         }
 
 
+        /*
+          Actualizar datos desde la última
+          respuesta verificada del servidor.
+        */
+
         pendingTransfer.recipient =
           qrPaymentContext.recipient;
 
@@ -1541,52 +1543,98 @@ document
       }
 
 
+      let rpcData = null;
+
+      let rpcError = null;
+
+
       // ==================================================
-      // RPC SEGURA DE TRANSFERENCIA
+      // PAGO QR V2 SEGURO
       // ==================================================
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .rpc(
-            "tikipay_transfer",
-            {
+      if (
+        qrPaymentMode &&
+        qrPaymentContext?.version === 2 &&
+        qrPaymentContext?.qr_id
+      ) {
 
-              p_recipient:
-                pendingTransfer
-                  .recipient,
+        const response =
+          await supabaseClient
+            .rpc(
+              "tikipay_qr_payment",
+              {
 
-              p_amount:
-                pendingTransfer
-                  .amount,
+                p_qr_id:
+                  qrPaymentContext.qr_id,
 
-              p_description:
-                pendingTransfer
-                  .description
-                ||
-                (
-                  qrPaymentMode
-                    ?
-                    "Pago mediante QR TikiPay"
-                    :
-                    null
-                )
+                p_amount:
+                  pendingTransfer.amount,
 
-            }
-          );
+                p_description:
+                  pendingTransfer.description
+                  ||
+                  null
+
+              }
+            );
+
+
+        rpcData =
+          response.data;
+
+
+        rpcError =
+          response.error;
+
+      }
+
+
+      // ==================================================
+      // TRANSFERENCIA NORMAL / QR V1
+      // ==================================================
+
+      else {
+
+        const response =
+          await supabaseClient
+            .rpc(
+              "tikipay_transfer",
+              {
+
+                p_recipient:
+                  pendingTransfer.recipient,
+
+                p_amount:
+                  pendingTransfer.amount,
+
+                p_description:
+                  pendingTransfer.description
+                  ||
+                  null
+
+              }
+            );
+
+
+        rpcData =
+          response.data;
+
+
+        rpcError =
+          response.error;
+
+      }
 
 
       // ==================================================
       // ERROR
       // ==================================================
 
-      if (error) {
+      if (rpcError) {
 
         console.error(
-          "Error transferencia:",
-          error
+          "Error operación:",
+          rpcError
         );
 
 
@@ -1595,7 +1643,7 @@ document
 
         showTransferMessage(
           transferErrorMessage(
-            error
+            rpcError
           ),
           "error"
         );
@@ -1610,9 +1658,7 @@ document
             ?
             "Confirmar pago"
             :
-            translateTransferText(
-              "Confirmar envío"
-            );
+            "Confirmar envío";
 
 
         return;
@@ -1633,16 +1679,14 @@ document
           ?
           "Confirmar pago"
           :
-          translateTransferText(
-            "Confirmar envío"
-          );
+          "Confirmar envío";
 
 
       closeTransferModal();
 
 
       handleTransferSuccess(
-        data
+        rpcData
       );
 
     }
@@ -1675,7 +1719,7 @@ function handleTransferSuccess(
 
 
   // ====================================================
-  // ACTUALIZAR SALDO
+  // SALDO NUEVO
   // ====================================================
 
   transferAccount.available_balance =
@@ -1697,8 +1741,7 @@ function handleTransferSuccess(
     (
       result.recipient_name
       ||
-      qrPaymentContext
-        ?.recipient_name
+      qrPaymentContext?.recipient_name
       ||
       "Usuario TikiPay"
     )
@@ -1749,7 +1792,7 @@ function handleTransferSuccess(
 
 
   // ====================================================
-  // CAMBIAR TÍTULO SI ES QR
+  // TÍTULO
   // ====================================================
 
   const receiptTitle =
@@ -1798,7 +1841,7 @@ function handleTransferSuccess(
 
 
   // ====================================================
-  // EL QR YA FUE UTILIZADO POR ESTA SESIÓN
+  // LIMPIAR QR DE SESIÓN
   // ====================================================
 
   if (qrPaymentMode) {
@@ -1823,7 +1866,7 @@ function handleTransferSuccess(
 
 
 // ======================================================
-// NUEVA TRANSFERENCIA
+// NUEVA OPERACIÓN
 // ======================================================
 
 document
@@ -1845,22 +1888,19 @@ document
       }
 
 
-      const formCard =
-        document.getElementById(
-          "transferFormCard"
-        );
-
-
-      const receipt =
-        document.getElementById(
+      document
+        .getElementById(
           "transferReceipt"
-        );
-
-
-      receipt
+        )
         ?.classList
         .remove(
           "visible"
+        );
+
+
+      const formCard =
+        document.getElementById(
+          "transferFormCard"
         );
 
 
@@ -1889,7 +1929,7 @@ document
 
 
 // ======================================================
-// VER MOVIMIENTOS
+// MOVIMIENTOS
 // ======================================================
 
 document
@@ -1926,7 +1966,7 @@ function closeTransferModal() {
 
 
 // ======================================================
-// CLICK FUERA DEL MODAL
+// CLICK FUERA
 // ======================================================
 
 document
@@ -1976,7 +2016,7 @@ document.addEventListener(
 
 
 // ======================================================
-// MENSAJES DE ERROR QR
+// MENSAJES QR
 // ======================================================
 
 function secureQrErrorMessage(
@@ -2003,13 +2043,13 @@ function secureQrErrorMessage(
       "Este código QR fue desactivado.",
 
     QR_EXPIRED:
-      "Este código QR ya venció. Solicita uno nuevo.",
+      "Este código QR venció. Solicita uno nuevo.",
 
     SELF_PAYMENT:
       "Este código QR pertenece a tu propia cuenta.",
 
     RECIPIENT_NOT_FOUND:
-      "No se encontró la cuenta receptora de este QR."
+      "No se encontró la cuenta receptora."
 
   };
 
@@ -2024,7 +2064,7 @@ function secureQrErrorMessage(
 
 
 // ======================================================
-// ERRORES TRANSFERENCIA
+// ERRORES RPC
 // ======================================================
 
 function transferErrorMessage(
@@ -2045,12 +2085,12 @@ function transferErrorMessage(
 
   if (
     message.includes(
-      "RECIPIENT_NOT_FOUND"
+      "QR_AMOUNT_MISMATCH"
     )
   ) {
 
     return (
-      "No encontramos al destinatario."
+      "El monto del pago no coincide con el monto definido por el QR."
     );
 
   }
@@ -2058,12 +2098,83 @@ function transferErrorMessage(
 
   if (
     message.includes(
+      "QR_EXPIRED"
+    )
+  ) {
+
+    return (
+      "Este código QR ya venció."
+    );
+
+  }
+
+
+  if (
+    message.includes(
+      "QR_REVOKED"
+    )
+  ) {
+
+    return (
+      "Este código QR fue desactivado."
+    );
+
+  }
+
+
+  if (
+    message.includes(
+      "QR_NOT_FOUND"
+    )
+  ) {
+
+    return (
+      "Este código QR ya no existe."
+    );
+
+  }
+
+
+  if (
+    message.includes(
+      "QR_CURRENCY_MISMATCH"
+    )
+  ) {
+
+    return (
+      "La moneda del QR no coincide con la moneda de tu cuenta."
+    );
+
+  }
+
+
+  if (
+    message.includes(
+      "SELF_PAYMENT"
+    ) ||
+    message.includes(
       "SELF_TRANSFER"
     )
   ) {
 
     return (
-      "No puedes enviarte dinero a tu propia cuenta."
+      "No puedes realizar un pago a tu propia cuenta."
+    );
+
+  }
+
+
+  if (
+    message.includes(
+      "RECIPIENT_NOT_FOUND"
+    ) ||
+    message.includes(
+      "RECIPIENT_ACCOUNT_NOT_FOUND"
+    )
+  ) {
+
+    return (
+      "No encontramos la cuenta del destinatario."
     );
 
   }
@@ -2089,7 +2200,7 @@ function transferErrorMessage(
   ) {
 
     return (
-      "Tu cuenta tiene una restricción y no puede enviar dinero."
+      "Tu cuenta tiene una restricción y no puede realizar el pago."
     );
 
   }
@@ -2102,7 +2213,7 @@ function transferErrorMessage(
   ) {
 
     return (
-      "La cuenta del destinatario no puede recibir dinero."
+      "La cuenta receptora no puede recibir dinero."
     );
 
   }
@@ -2128,7 +2239,7 @@ function transferErrorMessage(
   ) {
 
     return (
-      "El monto ingresado no es válido."
+      "El monto no es válido."
     );
 
   }
@@ -2168,7 +2279,7 @@ function transferErrorMessage(
 
 
 // ======================================================
-// VALIDAR TIKI-ID
+// TIKI-ID
 // ======================================================
 
 function isValidTikiId(
@@ -2189,7 +2300,7 @@ function isValidTikiId(
 
 
 // ======================================================
-// NORMALIZAR MONTO
+// MONTO
 // ======================================================
 
 function normalizeTransferAmount(
@@ -2235,7 +2346,7 @@ function normalizeTransferAmount(
 
 
 // ======================================================
-// FECHA DEL QR
+// FECHA QR
 // ======================================================
 
 function formatQrTransferExpiry(
@@ -2378,32 +2489,7 @@ function formatTransferMoney(
 
 
 // ======================================================
-// TRADUCCIÓN
-// ======================================================
-
-function translateTransferText(
-  text
-) {
-
-  if (
-    typeof tikiT ===
-    "function"
-  ) {
-
-    return tikiT(
-      text
-    );
-
-  }
-
-
-  return text;
-
-}
-
-
-// ======================================================
-// MENSAJES
+// MENSAJE
 // ======================================================
 
 function showTransferMessage(
@@ -2423,13 +2509,7 @@ function showTransferMessage(
 
 
   element.textContent =
-    text
-      ?
-      translateTransferText(
-        text
-      )
-      :
-      "";
+    text || "";
 
 
   element.className =
