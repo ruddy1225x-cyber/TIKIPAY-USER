@@ -10,7 +10,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>
+  <title id="documentTitle">
     Enviar dinero | TikiPay
   </title>
 
@@ -53,6 +53,86 @@
     }
 
 
+    /* ==================================================
+       INDICADOR QR
+    ================================================== */
+
+    .qr-payment-banner {
+      display: none;
+
+      margin-bottom: 18px;
+      padding: 14px 16px;
+
+      border:
+        1px solid
+        #bae6fd;
+
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          90deg,
+          #effaff,
+          #ecfeff
+        );
+
+      color:
+        #075985;
+    }
+
+
+    .qr-payment-banner.visible {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+
+    .qr-payment-banner-icon {
+      width: 40px;
+      height: 40px;
+
+      flex:
+        0 0 40px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0f7cf7,
+          #06b6d4
+        );
+
+      color: white;
+
+      font-size: 20px;
+    }
+
+
+    .qr-payment-banner strong {
+      display: block;
+      margin-bottom: 3px;
+      color: #075985;
+      font-size: 13px;
+    }
+
+
+    .qr-payment-banner span {
+      display: block;
+      color: #39738f;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+
+    /* ==================================================
+       SALDO
+    ================================================== */
+
     .transfer-balance-card {
       margin-bottom: 20px;
       padding: 22px;
@@ -83,15 +163,29 @@
     }
 
 
+    /* ==================================================
+       FORMULARIO
+    ================================================== */
+
     .transfer-card {
       background: white;
-      border: 1px solid #dbe5f0;
+
+      border:
+        1px solid
+        #dbe5f0;
+
       border-radius: 22px;
+
       padding: 26px;
 
       box-shadow:
         0 10px 35px
-        rgba(15, 23, 42, 0.05);
+        rgba(
+          15,
+          23,
+          42,
+          0.05
+        );
     }
 
 
@@ -102,8 +196,11 @@
 
     .transfer-group label {
       display: block;
+
       margin-bottom: 7px;
+
       color: #0f172a;
+
       font-size: 13px;
       font-weight: 800;
     }
@@ -111,24 +208,22 @@
 
     .transfer-group input,
     .transfer-group textarea {
+
       width: 100%;
+
       box-sizing: border-box;
 
       border:
         1px solid
         #cbd5e1;
 
-      border-radius:
-        12px;
+      border-radius: 12px;
 
-      background:
-        white;
+      background: white;
 
-      color:
-        #0f172a;
+      color: #0f172a;
 
-      outline:
-        none;
+      outline: none;
     }
 
 
@@ -147,11 +242,33 @@
 
     .transfer-group input:focus,
     .transfer-group textarea:focus {
+
       border-color: #0ea5e9;
 
       box-shadow:
         0 0 0 3px
-        rgba(14, 165, 233, 0.10);
+        rgba(
+          14,
+          165,
+          233,
+          0.10
+        );
+    }
+
+
+    .transfer-group input[readonly] {
+
+      background:
+        #f3f8fc !important;
+
+      border-color:
+        #b9d7ea;
+
+      color:
+        #174b72;
+
+      font-weight:
+        800;
     }
 
 
@@ -161,33 +278,65 @@
 
 
     .amount-wrapper span {
+
       position: absolute;
+
       left: 14px;
+
       top: 50%;
-      transform: translateY(-50%);
+
+      transform:
+        translateY(-50%);
+
       color: #64748b;
+
       font-weight: 800;
     }
 
 
     .amount-wrapper input {
       padding-left: 48px;
+
       font-size: 18px;
       font-weight: 800;
     }
 
 
     .transfer-help {
+
       margin-top: 6px;
+
       color: #64748b;
+
       font-size: 11px;
     }
 
 
+    .qr-recipient-help {
+      display: none;
+
+      margin-top: 7px;
+
+      color: #087fbd;
+
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+
+    .qr-recipient-help.visible {
+      display: block;
+    }
+
+
     .transfer-button {
+
       width: 100%;
+
       min-height: 48px;
+
       border: none;
+
       border-radius: 12px;
 
       background:
@@ -198,7 +347,9 @@
         );
 
       color: white;
+
       font-weight: 900;
+
       cursor: pointer;
     }
 
@@ -210,9 +361,13 @@
 
 
     .transfer-message {
+
       min-height: 18px;
+
       margin-top: 15px;
+
       text-align: center;
+
       font-size: 13px;
       font-weight: 700;
     }
@@ -228,16 +383,20 @@
     }
 
 
-    /* ================================================
+    /* ==================================================
        MODAL
-    ================================================= */
+    ================================================== */
 
     .transfer-modal {
+
       position: fixed;
+
       inset: 0;
+
       z-index: 1000;
 
       display: none;
+
       align-items: center;
       justify-content: center;
 
@@ -259,7 +418,9 @@
 
 
     .transfer-modal-card {
+
       width: 100%;
+
       max-width: 440px;
 
       padding: 26px;
@@ -270,16 +431,25 @@
 
       box-shadow:
         0 25px 70px
-        rgba(15, 23, 42, 0.24);
+        rgba(
+          15,
+          23,
+          42,
+          0.24
+        );
     }
 
 
     .transfer-modal-icon {
+
       width: 58px;
       height: 58px;
-      margin: 0 auto 14px;
+
+      margin:
+        0 auto 14px;
 
       display: flex;
+
       align-items: center;
       justify-content: center;
 
@@ -293,30 +463,43 @@
 
 
     .transfer-modal-card h2 {
+
       margin: 0;
+
       text-align: center;
+
       color: #0f172a;
     }
 
 
     .transfer-modal-description {
+
       margin: 8px 0 22px;
+
       text-align: center;
+
       color: #64748b;
+
       font-size: 13px;
     }
 
 
     .transfer-summary {
+
       padding: 16px;
+
       border-radius: 15px;
+
       background: #f8fafc;
     }
 
 
     .transfer-summary-row {
+
       display: flex;
+
       justify-content: space-between;
+
       gap: 14px;
 
       padding: 9px 0;
@@ -333,46 +516,63 @@
 
 
     .transfer-summary-row span {
+
       color: #64748b;
+
       font-size: 12px;
     }
 
 
     .transfer-summary-row strong {
+
       color: #0f172a;
+
       text-align: right;
+
       word-break: break-word;
     }
 
 
     .transfer-modal-actions {
+
       display: grid;
-      grid-template-columns: 1fr 1fr;
+
+      grid-template-columns:
+        1fr 1fr;
+
       gap: 10px;
+
       margin-top: 20px;
     }
 
 
     .transfer-cancel-button,
     .transfer-confirm-button {
+
       min-height: 45px;
+
       border-radius: 11px;
+
       font-weight: 800;
+
       cursor: pointer;
     }
 
 
     .transfer-cancel-button {
+
       border:
         1px solid
         #cbd5e1;
 
       background: white;
+
       color: #475569;
     }
 
 
     .transfer-confirm-button {
+
       border: none;
 
       background:
@@ -392,28 +592,41 @@
     }
 
 
-    /* ================================================
+    /* ==================================================
        RECIBO
-    ================================================= */
+    ================================================== */
 
     .transfer-receipt {
+
       display: none;
 
       margin-top: 20px;
+
       padding: 25px;
 
       border:
         1px solid
         #bbf7d0;
 
-      border-radius:
-        20px;
+      border-radius: 20px;
 
       background:
-        #f0fdf4;
+        linear-gradient(
+          180deg,
+          #f3fff7,
+          #ecfdf4
+        );
 
-      text-align:
-        center;
+      text-align: center;
+
+      box-shadow:
+        0 12px 35px
+        rgba(
+          5,
+          150,
+          105,
+          .06
+        );
     }
 
 
@@ -423,6 +636,7 @@
 
 
     .receipt-icon {
+
       width: 60px;
       height: 60px;
 
@@ -430,6 +644,7 @@
         0 auto 14px;
 
       display: flex;
+
       align-items: center;
       justify-content: center;
 
@@ -438,19 +653,29 @@
       background:
         #dcfce7;
 
+      color:
+        #078346;
+
       font-size: 28px;
+      font-weight: 900;
     }
 
 
     .transfer-receipt h2 {
-      margin: 0 0 8px;
+
+      margin:
+        0 0 8px;
+
       color: #166534;
     }
 
 
     .transfer-receipt p {
+
       margin: 5px 0;
+
       color: #475569;
+
       font-size: 13px;
     }
 
@@ -460,18 +685,86 @@
     }
 
 
+    .receipt-operation-type {
+
+      display: none;
+
+      width: max-content;
+
+      margin:
+        0 auto 14px;
+
+      padding:
+        6px 12px;
+
+      border-radius:
+        999px;
+
+      background:
+        #dff7ff;
+
+      color:
+        #0877a3;
+
+      font-size:
+        10px;
+
+      font-weight: 900;
+
+      text-transform:
+        uppercase;
+    }
+
+
+    .receipt-operation-type.visible {
+      display: block;
+    }
+
+
     .receipt-actions {
+
       margin-top: 18px;
 
       display: grid;
-      grid-template-columns: 1fr 1fr;
+
+      grid-template-columns:
+        1fr 1fr;
+
       gap: 10px;
     }
 
 
+    .receipt-security {
+
+      margin-top: 17px;
+
+      padding: 10px 12px;
+
+      border-radius: 12px;
+
+      background:
+        rgba(
+          220,
+          252,
+          231,
+          .65
+        );
+
+      color:
+        #39765b;
+
+      font-size: 10px;
+    }
+
+
+    /* ==================================================
+       RESPONSIVE
+    ================================================== */
+
     @media (max-width: 600px) {
 
       .transfer-container {
+
         padding:
           22px
           16px
@@ -491,7 +784,9 @@
 
       .transfer-modal-actions,
       .receipt-actions {
-        grid-template-columns: 1fr;
+
+        grid-template-columns:
+          1fr;
       }
 
     }
@@ -529,6 +824,7 @@
 
 
     <a
+      id="transferBackButton"
       href="dashboard.html"
       class="icon-button"
       aria-label="Volver"
@@ -546,24 +842,61 @@
   <main class="transfer-container">
 
 
+    <!-- ==================================================
+         ENCABEZADO
+    =================================================== -->
+
     <section class="transfer-heading">
 
-      <p class="small-label">
+      <p
+        id="transferSmallLabel"
+        class="small-label"
+      >
         TikiPay
       </p>
 
-      <h1>
+      <h1 id="transferPageTitle">
         Enviar dinero
       </h1>
 
-      <p>
+      <p id="transferPageDescription">
         Transfiere saldo de forma segura a otro usuario TikiPay.
       </p>
 
     </section>
 
 
-    <!-- SALDO -->
+    <!-- ==================================================
+         INDICADOR PAGO QR
+    =================================================== -->
+
+    <section
+      id="qrPaymentBanner"
+      class="qr-payment-banner"
+    >
+
+      <div class="qr-payment-banner-icon">
+        ▦
+      </div>
+
+      <div>
+
+        <strong>
+          Pago mediante QR TikiPay
+        </strong>
+
+        <span>
+          El destinatario fue identificado mediante un código QR verificado.
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         SALDO
+    =================================================== -->
 
     <section class="transfer-balance-card">
 
@@ -578,7 +911,9 @@
     </section>
 
 
-    <!-- FORMULARIO -->
+    <!-- ==================================================
+         FORMULARIO
+    =================================================== -->
 
     <section
       id="transferFormCard"
@@ -587,6 +922,8 @@
 
       <form id="transferForm">
 
+
+        <!-- DESTINATARIO -->
 
         <div class="transfer-group">
 
@@ -602,12 +939,24 @@
             required
           >
 
-          <p class="transfer-help">
+          <p
+            id="recipientHelp"
+            class="transfer-help"
+          >
             Puedes utilizar el TikiPay ID o correo electrónico del destinatario.
+          </p>
+
+          <p
+            id="qrRecipientHelp"
+            class="qr-recipient-help"
+          >
+            ✓ Destinatario identificado mediante QR TikiPay.
           </p>
 
         </div>
 
+
+        <!-- MONTO -->
 
         <div class="transfer-group">
 
@@ -636,6 +985,8 @@
 
         </div>
 
+
+        <!-- CONCEPTO -->
 
         <div class="transfer-group">
 
@@ -672,7 +1023,9 @@
     </section>
 
 
-    <!-- RECIBO -->
+    <!-- ==================================================
+         RECIBO
+    =================================================== -->
 
     <section
       id="transferReceipt"
@@ -683,12 +1036,21 @@
         ✓
       </div>
 
-      <h2>
+
+      <span
+        id="receiptOperationType"
+        class="receipt-operation-type"
+      >
+        Pago QR
+      </span>
+
+
+      <h2 id="receiptTitle">
         Transferencia realizada
       </h2>
 
 
-      <p>
+      <p id="receiptRecipientLabel">
         Enviado a
       </p>
 
@@ -724,6 +1086,11 @@
       </strong>
 
 
+      <div class="receipt-security">
+        🔒 Operación procesada mediante el sistema seguro de TikiPay.
+      </div>
+
+
       <div class="receipt-actions">
 
         <button
@@ -752,7 +1119,7 @@
 
 
   <!-- ==================================================
-       CONFIRMACIÓN
+       MODAL DE CONFIRMACIÓN
   =================================================== -->
 
   <div
@@ -763,17 +1130,23 @@
     <div class="transfer-modal-card">
 
 
-      <div class="transfer-modal-icon">
+      <div
+        id="transferModalIcon"
+        class="transfer-modal-icon"
+      >
         💸
       </div>
 
 
-      <h2>
+      <h2 id="transferModalTitle">
         Confirmar transferencia
       </h2>
 
 
-      <p class="transfer-modal-description">
+      <p
+        id="transferModalDescription"
+        class="transfer-modal-description"
+      >
         Revisa los datos antes de enviar.
       </p>
 
@@ -869,6 +1242,293 @@
   <script
     src="js/transferencias.js"
   ></script>
+
+
+  <!-- ==================================================
+       INTERFAZ DINÁMICA QR
+       Solo cambia textos y navegación.
+       NO mueve dinero.
+  =================================================== -->
+
+  <script>
+
+    (function () {
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+
+      const qrMode =
+        params.get("source") === "qr";
+
+
+      if (!qrMode) {
+        return;
+      }
+
+
+      // ==================================================
+      // TÍTULO DEL NAVEGADOR
+      // ==================================================
+
+      document.title =
+        "Pagar con QR | TikiPay";
+
+
+      // ==================================================
+      // ENCABEZADO
+      // ==================================================
+
+      const pageTitle =
+        document.getElementById(
+          "transferPageTitle"
+        );
+
+
+      const pageDescription =
+        document.getElementById(
+          "transferPageDescription"
+        );
+
+
+      const smallLabel =
+        document.getElementById(
+          "transferSmallLabel"
+        );
+
+
+      if (pageTitle) {
+
+        pageTitle.textContent =
+          "Pagar con QR";
+
+      }
+
+
+      if (pageDescription) {
+
+        pageDescription.textContent =
+          "Confirma el destinatario y el monto antes de realizar el pago.";
+
+      }
+
+
+      if (smallLabel) {
+
+        smallLabel.textContent =
+          "TikiPay QR";
+
+      }
+
+
+      // ==================================================
+      // BANNER QR
+      // ==================================================
+
+      document
+        .getElementById(
+          "qrPaymentBanner"
+        )
+        ?.classList
+        .add(
+          "visible"
+        );
+
+
+      // ==================================================
+      // AYUDA DEL DESTINATARIO
+      // ==================================================
+
+      const normalHelp =
+        document.getElementById(
+          "recipientHelp"
+        );
+
+
+      const qrHelp =
+        document.getElementById(
+          "qrRecipientHelp"
+        );
+
+
+      if (normalHelp) {
+
+        normalHelp.style.display =
+          "none";
+
+      }
+
+
+      if (qrHelp) {
+
+        qrHelp.classList.add(
+          "visible"
+        );
+
+      }
+
+
+      // ==================================================
+      // MODAL
+      // ==================================================
+
+      const modalIcon =
+        document.getElementById(
+          "transferModalIcon"
+        );
+
+
+      const modalTitle =
+        document.getElementById(
+          "transferModalTitle"
+        );
+
+
+      const modalDescription =
+        document.getElementById(
+          "transferModalDescription"
+        );
+
+
+      const confirmButton =
+        document.getElementById(
+          "confirmTransferButton"
+        );
+
+
+      if (modalIcon) {
+
+        modalIcon.textContent =
+          "▦";
+
+      }
+
+
+      if (modalTitle) {
+
+        modalTitle.textContent =
+          "Confirmar pago QR";
+
+      }
+
+
+      if (modalDescription) {
+
+        modalDescription.textContent =
+          "Revisa los datos antes de realizar el pago.";
+
+      }
+
+
+      if (confirmButton) {
+
+        confirmButton.textContent =
+          "Confirmar pago";
+
+      }
+
+
+      // ==================================================
+      // RECIBO
+      // ==================================================
+
+      const receiptTitle =
+        document.getElementById(
+          "receiptTitle"
+        );
+
+
+      const receiptLabel =
+        document.getElementById(
+          "receiptRecipientLabel"
+        );
+
+
+      const receiptType =
+        document.getElementById(
+          "receiptOperationType"
+        );
+
+
+      const newButton =
+        document.getElementById(
+          "newTransferButton"
+        );
+
+
+      if (receiptTitle) {
+
+        receiptTitle.textContent =
+          "Pago QR realizado";
+
+      }
+
+
+      if (receiptLabel) {
+
+        receiptLabel.textContent =
+          "Pagado a";
+
+      }
+
+
+      if (receiptType) {
+
+        receiptType.classList.add(
+          "visible"
+        );
+
+      }
+
+
+      if (newButton) {
+
+        newButton.textContent =
+          "Pagar otro QR";
+
+
+        /*
+          transferencias.js primero limpia
+          correctamente la operación anterior.
+
+          Después navegamos a un nuevo escaneo QR.
+        */
+
+        newButton.addEventListener(
+          "click",
+          function () {
+
+            window.location.href =
+              "pagar-qr.html";
+
+          }
+        );
+
+      }
+
+
+      // ==================================================
+      // BOTÓN VOLVER
+      // ==================================================
+
+      const backButton =
+        document.getElementById(
+          "transferBackButton"
+        );
+
+
+      if (backButton) {
+
+        backButton.href =
+          "pagar-qr.html";
+
+      }
+
+    })();
+
+  </script>
 
 
 </body>

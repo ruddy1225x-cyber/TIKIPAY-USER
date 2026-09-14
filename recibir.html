@@ -11,7 +11,7 @@
   >
 
   <title>
-    Recibir | TikiPay
+    Cobrar con QR | TikiPay
   </title>
 
   <link
@@ -27,246 +27,1041 @@
 
   <style>
 
-    .receive-container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 32px 20px 120px;
+    body.receive-page {
+      background: #f4f8fc;
     }
 
 
-    .receive-heading {
+    .receive-main {
+      padding-bottom: 120px;
+    }
+
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+
+    .receive-hero {
+
+      min-height: 270px;
+
+      padding:
+        30px 20px
+        112px;
+
       text-align: center;
-      margin-bottom: 24px;
+
+      color: #ffffff;
+
+      background:
+        radial-gradient(
+          circle at 86% 10%,
+          rgba(255,255,255,.13),
+          transparent 26%
+        ),
+        linear-gradient(
+          145deg,
+          #063574 0%,
+          #087cb1 54%,
+          #08b7bd 100%
+        );
+
+      position: relative;
+      overflow: hidden;
     }
 
 
-    .receive-heading h1 {
-      margin: 6px 0 8px;
-      color: #0f172a;
-      font-size: 28px;
+    .receive-hero-logo {
+
+      width: 65px;
+      height: 65px;
+
+      margin: 0 auto 8px;
+
+      object-fit: contain;
+
     }
 
 
-    .receive-heading p {
+    .receive-hero-brand {
+
       margin: 0;
-      color: #64748b;
-      font-size: 14px;
+
+      font-size: 23px;
+      font-weight: 900;
+
+    }
+
+
+    .receive-hero h1 {
+
+      margin:
+        22px 0 7px;
+
+      font-size:
+        clamp(
+          31px,
+          7vw,
+          43px
+        );
+
+    }
+
+
+    .receive-hero p {
+
+      margin: 0 auto;
+
+      max-width: 500px;
+
+      color:
+        rgba(255,255,255,.82);
+
+      font-size: 13px;
+
+      line-height: 1.55;
+
+    }
+
+
+    /* =====================================================
+       CONTENIDO
+    ===================================================== */
+
+    .receive-content {
+
+      width:
+        min(
+          calc(100% - 28px),
+          620px
+        );
+
+      margin:
+        -85px auto 0;
+
+      position: relative;
+
+      z-index: 5;
+
     }
 
 
     .receive-card {
-      background: white;
-      border: 1px solid #dbe5f0;
-      border-radius: 24px;
-      padding: 28px;
+
+      padding:
+        24px;
+
+      border:
+        1px solid #dce7f1;
+
+      border-radius:
+        30px;
+
+      background: #ffffff;
+
       box-shadow:
-        0 12px 40px
-        rgba(15, 23, 42, 0.06);
+        0 24px 60px
+        rgba(4,35,75,.14);
+
     }
 
 
-    .receive-user {
+    /* =====================================================
+       USUARIO
+    ===================================================== */
+
+    .receive-account {
+
       display: flex;
-      flex-direction: column;
+
       align-items: center;
-      text-align: center;
-      margin-bottom: 24px;
+
+      justify-content: center;
+
+      gap: 12px;
+
+      margin-bottom: 18px;
+
     }
 
 
     .receive-avatar {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+
+      width: 52px;
+      height: 52px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 15px;
+
+      color: white;
+
       background:
         linear-gradient(
           135deg,
-          #0f62e8,
-          #06b6d4
+          #0976ee,
+          #08b9c8
         );
-      color: white;
-      font-size: 25px;
+
+      font-size: 20px;
+
       font-weight: 900;
-      margin-bottom: 12px;
+
     }
 
 
-    .receive-user h2 {
+    .receive-account-info small {
+
+      display: block;
+
+      margin-bottom: 3px;
+
+      color: #0990ad;
+
+      font-size: 9px;
+
+      font-weight: 900;
+
+      text-transform: uppercase;
+
+    }
+
+
+    .receive-account-info h2 {
+
       margin: 0;
-      color: #0f172a;
-      font-size: 21px;
+
+      color: #071b3a;
+
+      font-size: 18px;
+
     }
 
 
-    .receive-user p {
-      margin: 5px 0 0;
-      color: #64748b;
-      font-size: 13px;
+    .receive-account-info p {
+
+      margin: 4px 0 0;
+
+      color: #78899b;
+
+      font-size: 10px;
+
+    }
+
+
+    /* =====================================================
+       ESTADO
+    ===================================================== */
+
+    .receive-ready {
+
+      width: max-content;
+
+      margin:
+        0 auto 16px;
+
+      padding:
+        6px 11px;
+
+      border-radius: 999px;
+
+      background: #dcfce7;
+
+      color: #087d48;
+
+      font-size: 9px;
+
+      font-weight: 900;
+
+      text-transform: uppercase;
+
+    }
+
+
+    /* =====================================================
+       QR
+    ===================================================== */
+
+    .qr-shell {
+
+      padding:
+        20px;
+
+      border-radius:
+        24px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #071f48,
+          #075a93 55%,
+          #05a2b6
+        );
+
+    }
+
+
+    .qr-shell-title {
+
+      margin-bottom:
+        13px;
+
+      text-align:
+        center;
+
+      color: #ffffff;
+
+    }
+
+
+    .qr-shell-title strong {
+
+      display: block;
+
+      font-size: 15px;
+
+    }
+
+
+    .qr-shell-title span {
+
+      display: block;
+
+      margin-top: 3px;
+
+      color:
+        rgba(255,255,255,.72);
+
+      font-size: 10px;
+
     }
 
 
     .qr-area {
-      width: 250px;
-      min-height: 250px;
-      margin: 0 auto 26px;
-      padding: 18px;
-      border: 1px solid #dbe5f0;
-      border-radius: 22px;
-      background: white;
+
+      width:
+        min(
+          330px,
+          100%
+        );
+
+      aspect-ratio: 1 / 1;
+
+      margin:
+        0 auto;
+
+      padding: 17px;
+
+      box-sizing:
+        border-box;
+
       display: flex;
-      justify-content: center;
+
       align-items: center;
-      box-sizing: border-box;
+
+      justify-content: center;
+
+      border-radius: 22px;
+
+      background: #ffffff;
+
     }
 
 
     .qr-area img,
     .qr-area canvas {
-      max-width: 100%;
-      height: auto;
+
+      width: 100% !important;
+
+      max-width: 100% !important;
+
+      height: auto !important;
+
     }
 
 
-    .receive-id-label {
-      margin-bottom: 7px;
-      color: #64748b;
+    .qr-area span {
+
+      color: #718198;
+
       font-size: 12px;
-      text-align: center;
+
     }
 
 
-    .receive-id-box {
+    /* =====================================================
+       INFORMACIÓN DEL QR
+    ===================================================== */
+
+    .qr-data {
+
+      margin-top: 17px;
+
+    }
+
+
+    .qr-data-row {
+
       display: flex;
-      align-items: center;
+
       justify-content: space-between;
-      gap: 14px;
-      padding: 15px 16px;
-      border: 1px solid #cbd5e1;
+
+      align-items: center;
+
+      gap: 16px;
+
+      padding: 8px 2px;
+
+      border-bottom:
+        1px solid #edf2f7;
+
+      color: #66798c;
+
+      font-size: 11px;
+
+    }
+
+
+    .qr-data-row:last-child {
+      border-bottom: 0;
+    }
+
+
+    .qr-data-row strong {
+
+      max-width: 65%;
+
+      color: #071b3a;
+
+      text-align: right;
+
+      word-break: break-word;
+
+    }
+
+
+    .qr-data-row.amount strong {
+
+      color: #078b51;
+
+      font-size: 14px;
+
+    }
+
+
+    .qr-data-row.expiry strong {
+
+      color: #08729b;
+
+    }
+
+
+    /* =====================================================
+       VIGENCIA
+    ===================================================== */
+
+    .qr-validity-box {
+
+      margin-top: 16px;
+
+      padding: 12px 14px;
+
+      border:
+        1px solid #cfe6f0;
+
       border-radius: 14px;
-      background: #f8fafc;
+
+      background: #f3fbff;
+
     }
 
 
-    .receive-id-box strong {
-      color: #0f172a;
-      font-size: 15px;
-      letter-spacing: 0.04em;
-      word-break: break-all;
+    .qr-validity-box small {
+
+      display: block;
+
+      margin-bottom: 3px;
+
+      color: #71859a;
+
+      font-size: 9px;
+
+      text-transform: uppercase;
+
     }
 
 
-    .copy-id-button {
-      flex: 0 0 auto;
-      min-height: 38px;
-      padding: 0 14px;
-      border: none;
-      border-radius: 10px;
-      background: #e0f2fe;
-      color: #0369a1;
-      font-weight: 800;
-      cursor: pointer;
+    .qr-validity-box strong {
+
+      color: #087392;
+
+      font-size: 12px;
+
     }
 
+
+    /* =====================================================
+       BOTONES
+    ===================================================== */
 
     .receive-actions {
+
       display: grid;
+
       grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 20px;
+        1fr 1fr;
+
+      gap: 11px;
+
+      margin-top: 18px;
+
     }
 
 
-    .receive-primary-button,
-    .receive-secondary-button {
-      min-height: 46px;
-      border-radius: 12px;
-      font-weight: 800;
+    .receive-action {
+
+      min-height: 49px;
+
+      border:
+        1px solid #d3e1ec;
+
+      border-radius: 999px;
+
+      background: #f9fcff;
+
+      color: #087486;
+
+      font-family: inherit;
+
+      font-weight: 900;
+
       cursor: pointer;
+
     }
 
 
-    .receive-primary-button {
-      border: none;
+    .edit-qr-button {
+
+      width: 100%;
+
+      min-height: 54px;
+
+      margin-top: 15px;
+
+      border: 0;
+
+      border-radius: 17px;
+
+      color: #ffffff;
+
       background:
         linear-gradient(
-          90deg,
-          #0f62e8,
-          #06b6d4
+          100deg,
+          #0878f8,
+          #09b7c7
         );
-      color: white;
+
+      font-family: inherit;
+
+      font-size: 13px;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
     }
 
 
-    .receive-secondary-button {
-      border: 1px solid #cbd5e1;
-      background: white;
-      color: #075985;
+    .receive-tools {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 13px;
+
+      margin-top: 17px;
+
     }
 
 
-    .receive-security-note {
-      margin-top: 22px;
-      padding: 14px;
-      border-radius: 14px;
-      background: #f8fafc;
-      color: #64748b;
-      font-size: 12px;
-      line-height: 1.6;
-      text-align: center;
+    .receive-tool {
+
+      min-height: 105px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 8px;
+
+      border:
+        1px solid #dce7ef;
+
+      border-radius: 18px;
+
+      background: #ffffff;
+
+      color: #071b3a;
+
+      font-family: inherit;
+
+      font-weight: 800;
+
+      cursor: pointer;
+
     }
 
+
+    .receive-tool-icon {
+
+      width: 43px;
+      height: 43px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 13px;
+
+      background: #eafafb;
+
+      color: #087b91;
+
+      font-size: 20px;
+
+    }
+
+
+    /* =====================================================
+       MENSAJE / SEGURIDAD
+    ===================================================== */
 
     .receive-message {
+
       min-height: 18px;
-      margin-top: 15px;
+
+      margin: 13px 0 0;
+
       text-align: center;
-      font-size: 13px;
-      font-weight: 700;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
     }
 
 
     .receive-message.success {
-      color: #059669;
+      color: #07884a;
     }
 
 
     .receive-message.error {
-      color: #dc2626;
+      color: #d43d4b;
     }
 
 
+    .receive-security {
+
+      display: flex;
+
+      gap: 9px;
+
+      margin-top: 17px;
+
+      padding: 13px;
+
+      border:
+        1px solid #dce8f2;
+
+      border-radius: 14px;
+
+      background: #f8fbfe;
+
+      color: #63768a;
+
+      font-size: 10px;
+
+      line-height: 1.55;
+
+    }
+
+
+    .receive-security strong {
+      color: #087950;
+    }
+
+
+    /* =====================================================
+       MODAL
+    ===================================================== */
+
+    .qr-edit-modal {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 2500;
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 18px;
+
+      background:
+        rgba(4,25,55,.65);
+
+      backdrop-filter:
+        blur(6px);
+
+    }
+
+
+    .qr-edit-modal.visible {
+      display: flex;
+    }
+
+
+    .qr-edit-card {
+
+      width:
+        min(
+          100%,
+          430px
+        );
+
+      max-height:
+        calc(100vh - 40px);
+
+      overflow-y: auto;
+
+      padding: 25px;
+
+      border-radius: 24px;
+
+      background: #ffffff;
+
+      box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.25);
+
+    }
+
+
+    .qr-edit-card h2 {
+
+      margin:
+        0 0 5px;
+
+      color: #071b3a;
+
+      font-size: 22px;
+
+    }
+
+
+    .qr-edit-card > p {
+
+      margin:
+        0 0 20px;
+
+      color: #718198;
+
+      font-size: 12px;
+
+    }
+
+
+    .qr-edit-group {
+
+      margin-bottom: 16px;
+
+    }
+
+
+    .qr-edit-group label {
+
+      display: block;
+
+      margin-bottom: 6px;
+
+      color: #071b3a;
+
+      font-size: 11px;
+
+      font-weight: 900;
+
+    }
+
+
+    .qr-edit-group input,
+    .qr-edit-group textarea,
+    .qr-edit-group select {
+
+      width: 100%;
+
+      box-sizing: border-box;
+
+      border:
+        1px solid #cbd9e6;
+
+      border-radius: 12px;
+
+      background: #ffffff;
+
+      color: #071b3a;
+
+      font-family: inherit;
+
+      outline: none;
+
+    }
+
+
+    .qr-edit-group input,
+    .qr-edit-group select {
+
+      min-height: 49px;
+
+      padding:
+        0 13px;
+
+    }
+
+
+    .qr-edit-group textarea {
+
+      min-height: 78px;
+
+      padding:
+        12px 13px;
+
+      resize: vertical;
+
+    }
+
+
+    .qr-edit-group input:focus,
+    .qr-edit-group textarea:focus,
+    .qr-edit-group select:focus {
+
+      border-color: #0788ee;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(7,136,238,.10);
+
+    }
+
+
+    .validity-options {
+
+      display: grid;
+
+      gap: 8px;
+
+    }
+
+
+    .validity-option {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 11px;
+
+      padding:
+        11px 12px;
+
+      border:
+        1px solid #d8e4ef;
+
+      border-radius: 13px;
+
+      background: #fbfdff;
+
+      cursor: pointer;
+
+    }
+
+
+    .validity-option input {
+
+      width: 17px;
+      height: 17px;
+
+      min-height: auto;
+
+      margin: 0;
+
+      padding: 0;
+
+    }
+
+
+    .validity-option strong {
+
+      display: block;
+
+      color: #071b3a;
+
+      font-size: 11px;
+
+    }
+
+
+    .validity-option small {
+
+      display: block;
+
+      margin-top: 2px;
+
+      color: #7a899a;
+
+      font-size: 9px;
+
+    }
+
+
+    .validity-option:has(input:checked) {
+
+      border-color: #29a6de;
+
+      background: #effaff;
+
+    }
+
+
+    .qr-edit-actions {
+
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 10px;
+
+      margin-top: 20px;
+
+    }
+
+
+    .qr-edit-cancel,
+    .qr-edit-save {
+
+      min-height: 47px;
+
+      border-radius: 12px;
+
+      font-family: inherit;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
+    }
+
+
+    .qr-edit-cancel {
+
+      border:
+        1px solid #cad8e5;
+
+      background: #ffffff;
+
+      color: #4f6277;
+
+    }
+
+
+    .qr-edit-save {
+
+      border: 0;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          100deg,
+          #0878f8,
+          #09b7c7
+        );
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
     @media (max-width: 600px) {
 
-      .receive-container {
+      .receive-hero {
+
+        min-height: 240px;
+
         padding:
-          22px
-          16px
-          110px;
+          25px 15px
+          100px;
+
+      }
+
+
+      .receive-content {
+
+        width:
+          min(
+            calc(100% - 20px),
+            620px
+          );
+
+        margin-top: -78px;
+
       }
 
 
       .receive-card {
-        padding: 22px;
+
+        padding: 18px 16px;
+
+        border-radius: 26px;
+
       }
 
 
       .qr-area {
-        width: 220px;
-        min-height: 220px;
+
+        width:
+          min(
+            310px,
+            100%
+          );
+
       }
 
+    }
 
-      .receive-actions {
+
+    @media (max-width: 390px) {
+
+      .receive-actions,
+      .receive-tools,
+      .qr-edit-actions {
+
         grid-template-columns: 1fr;
-      }
 
-
-      .receive-heading h1 {
-        font-size: 24px;
       }
 
     }
@@ -276,7 +1071,7 @@
 </head>
 
 
-<body class="app-page">
+<body class="app-page receive-page">
 
 
   <header class="app-header">
@@ -310,124 +1105,481 @@
   </header>
 
 
-  <main class="receive-container">
+  <main class="receive-main">
 
 
-    <section class="receive-heading">
+    <section class="receive-hero">
 
-      <p class="small-label">
+      <img
+        src="assets/android-chrome-192x192.png"
+        class="receive-hero-logo"
+        alt="TikiPay"
+      >
+
+      <p class="receive-hero-brand">
         TikiPay
       </p>
 
       <h1>
-        Recibir dinero
+        Cobrar con QR
       </h1>
 
       <p>
-        Comparte tu código para recibir dinero.
+        Genera un QR seguro con monto opcional y
+        vigencia controlada por TikiPay.
       </p>
 
     </section>
 
 
-    <section class="receive-card">
+    <section class="receive-content">
+
+      <div class="receive-card">
 
 
-      <div class="receive-user">
+        <div class="receive-account">
 
-        <div
-          id="receiveAvatar"
-          class="receive-avatar"
-        >
-          T
+          <div
+            id="receiveAvatar"
+            class="receive-avatar"
+          >
+            T
+          </div>
+
+
+          <div class="receive-account-info">
+
+            <small>
+              Cuenta receptora
+            </small>
+
+            <h2 id="receiveName">
+              Usuario TikiPay
+            </h2>
+
+            <p>
+              Pago directo mediante QR TikiPay
+            </p>
+
+          </div>
+
         </div>
 
-        <h2 id="receiveName">
-          Usuario TikiPay
-        </h2>
 
-        <p>
-          TikiPay ID personal
-        </p>
-
-      </div>
+        <div class="receive-ready">
+          ● QR activo
+        </div>
 
 
-      <div
-        id="qr"
-        class="qr-area"
-      >
+        <div class="qr-shell">
 
-        <span>
-          Cargando...
-        </span>
+          <div class="qr-shell-title">
 
-      </div>
+            <strong>
+              Escanea para pagarme
+            </strong>
 
+            <span>
+              Código de cobro protegido por TikiPay
+            </span>
 
-      <p class="receive-id-label">
-        Tu TikiPay ID
-      </p>
+          </div>
 
 
-      <div class="receive-id-box">
+          <div
+            id="qr"
+            class="qr-area"
+          >
+            <span>
+              Generando QR seguro...
+            </span>
+          </div>
 
-        <strong id="receiveTikiId">
-          TIKI-XXXXXXXXXXXX
-        </strong>
+        </div>
+
+
+        <div class="qr-data">
+
+
+          <div class="qr-data-row">
+
+            <span>
+              Cuenta
+            </span>
+
+            <strong id="receiveTikiId">
+              TIKI-XXXXXXXXXXXX
+            </strong>
+
+          </div>
+
+
+          <div class="qr-data-row amount">
+
+            <span>
+              Monto
+            </span>
+
+            <strong id="receiveAmountLabel">
+              Bs 0,00
+            </strong>
+
+          </div>
+
+
+          <div class="qr-data-row">
+
+            <span>
+              Vigencia
+            </span>
+
+            <strong id="receiveValidityLabel">
+              Hoy
+            </strong>
+
+          </div>
+
+
+          <div class="qr-data-row expiry">
+
+            <span>
+              Válido hasta
+            </span>
+
+            <strong id="receiveExpiryLabel">
+              —
+            </strong>
+
+          </div>
+
+
+        </div>
+
+
+        <div class="qr-validity-box">
+
+          <small>
+            Seguridad QR
+          </small>
+
+          <strong id="qrStatusText">
+            Generando código seguro...
+          </strong>
+
+        </div>
+
+
+        <div class="receive-actions">
+
+          <button
+            id="saveQrButton"
+            class="receive-action"
+            type="button"
+          >
+            💾 Guardar
+          </button>
+
+
+          <button
+            id="shareTikiPayButton"
+            class="receive-action"
+            type="button"
+          >
+            ↗ Compartir
+          </button>
+
+        </div>
 
 
         <button
-          id="copyTikiIdButton"
-          class="copy-id-button"
+          id="editQrButton"
+          class="edit-qr-button"
           type="button"
         >
-          Copiar ID
-        </button>
-
-      </div>
-
-
-      <div class="receive-actions">
-
-        <button
-          id="shareTikiPayButton"
-          class="receive-primary-button"
-          type="button"
-        >
-          Compartir
+          Editar datos y vigencia del QR
         </button>
 
 
-        <button
-          id="refreshQrButton"
-          class="receive-secondary-button"
-          type="button"
-        >
-          Actualizar QR
-        </button>
+        <div class="receive-tools">
+
+          <button
+            id="copyTikiIdButton"
+            class="receive-tool"
+            type="button"
+          >
+
+            <span class="receive-tool-icon">
+              ⧉
+            </span>
+
+            Copiar TikiPay ID
+
+          </button>
+
+
+          <button
+            id="refreshQrButton"
+            class="receive-tool"
+            type="button"
+          >
+
+            <span class="receive-tool-icon">
+              ↻
+            </span>
+
+            Generar nuevo QR
+
+          </button>
+
+        </div>
+
+
+        <p
+          id="receiveMessage"
+          class="receive-message"
+          aria-live="polite"
+        ></p>
+
+
+        <div class="receive-security">
+
+          <span>
+            🔒
+          </span>
+
+          <div>
+
+            <strong>
+              QR protegido por TikiPay.
+            </strong>
+
+            La vigencia, el destinatario y el monto se verifican
+            desde el servidor antes de permitir el pago.
+
+          </div>
+
+        </div>
+
 
       </div>
-
-
-      <div class="receive-security-note">
-
-        Comparte únicamente tu TikiPay ID o este código QR.
-        Nunca compartas tu contraseña ni códigos de seguridad.
-
-      </div>
-
-
-      <p
-        id="receiveMessage"
-        class="receive-message"
-      ></p>
-
 
     </section>
 
 
   </main>
+
+
+  <!-- =====================================================
+       MODAL
+  ====================================================== -->
+
+  <div
+    id="qrEditModal"
+    class="qr-edit-modal"
+  >
+
+    <div class="qr-edit-card">
+
+
+      <h2>
+        Configurar QR
+      </h2>
+
+      <p>
+        Define el monto, concepto y tiempo durante el cual
+        este QR podrá utilizarse.
+      </p>
+
+
+      <div class="qr-edit-group">
+
+        <label for="qrAmountInput">
+          Monto a cobrar
+        </label>
+
+        <input
+          id="qrAmountInput"
+          type="number"
+          min="0"
+          step="0.01"
+          inputmode="decimal"
+          placeholder="0.00"
+        >
+
+      </div>
+
+
+      <div class="qr-edit-group">
+
+        <label for="qrDescriptionInput">
+          Concepto
+        </label>
+
+        <textarea
+          id="qrDescriptionInput"
+          maxlength="120"
+          placeholder="Ej. Pago del almuerzo"
+        ></textarea>
+
+      </div>
+
+
+      <div class="qr-edit-group">
+
+        <label>
+          Vigencia del QR
+        </label>
+
+
+        <div class="validity-options">
+
+
+          <label class="validity-option">
+
+            <input
+              type="radio"
+              name="qrValidity"
+              value="TODAY"
+              checked
+            >
+
+            <span>
+
+              <strong>
+                Hoy hasta las 23:59
+              </strong>
+
+              <small>
+                Recomendado para cobros diarios
+              </small>
+
+            </span>
+
+          </label>
+
+
+          <label class="validity-option">
+
+            <input
+              type="radio"
+              name="qrValidity"
+              value="WEEK"
+            >
+
+            <span>
+
+              <strong>
+                1 semana
+              </strong>
+
+              <small>
+                Vigencia durante 7 días
+              </small>
+
+            </span>
+
+          </label>
+
+
+          <label class="validity-option">
+
+            <input
+              type="radio"
+              name="qrValidity"
+              value="MONTH"
+            >
+
+            <span>
+
+              <strong>
+                1 mes
+              </strong>
+
+              <small>
+                Vigencia durante un mes
+              </small>
+
+            </span>
+
+          </label>
+
+
+          <label class="validity-option">
+
+            <input
+              type="radio"
+              name="qrValidity"
+              value="YEAR"
+            >
+
+            <span>
+
+              <strong>
+                1 año
+              </strong>
+
+              <small>
+                QR de larga duración
+              </small>
+
+            </span>
+
+          </label>
+
+
+          <label class="validity-option">
+
+            <input
+              type="radio"
+              name="qrValidity"
+              value="TWO_YEARS"
+            >
+
+            <span>
+
+              <strong>
+                2 años
+              </strong>
+
+              <small>
+                Duración máxima permitida
+              </small>
+
+            </span>
+
+          </label>
+
+
+        </div>
+
+      </div>
+
+
+      <div class="qr-edit-actions">
+
+        <button
+          id="cancelQrEditButton"
+          class="qr-edit-cancel"
+          type="button"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          id="saveQrEditButton"
+          class="qr-edit-save"
+          type="button"
+        >
+          Generar QR seguro
+        </button>
+
+      </div>
+
+
+    </div>
+
+  </div>
 
 
   <nav class="bottom-navigation">
@@ -440,6 +1592,7 @@
       Inicio
     </a>
 
+
     <a
       href="movimientos.html"
       class="nav-item"
@@ -448,13 +1601,15 @@
       Movimientos
     </a>
 
+
     <a
-      href="servicios.html"
-      class="nav-item"
+      href="recibir.html"
+      class="nav-item active"
     >
-      <span>◈</span>
-      Servicios
+      <span>▦</span>
+      Cobrar QR
     </a>
+
 
     <a
       href="perfil.html"
@@ -475,17 +1630,11 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
   ></script>
 
-  <script
-    src="js/supabase.js"
-  ></script>
+  <script src="js/supabase.js"></script>
 
-  <script
-    src="js/i18n.js"
-  ></script>
+  <script src="js/i18n.js"></script>
 
-  <script
-    src="js/recibir.js"
-  ></script>
+  <script src="js/recibir.js"></script>
 
 
 </body>

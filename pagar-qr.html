@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Pagar con QR | TikiPay</title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+
+  <style>
+
+    /* =====================================================
+       TIKIPAY - PAGAR CON QR
+    ===================================================== */
+
+    .qr-page {
+      width: min(100% - 32px, 680px);
+      margin: 0 auto;
+      padding: 34px 0 125px;
+    }
+
+
+    /* =====================================================
+       ENCABEZADO
+    ===================================================== */
+
+    .qr-page-heading {
+      margin-bottom: 22px;
+    }
+
+
+    .qr-page-heading .small-label {
+      margin: 0 0 7px;
+      color: #078db7;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+
+    .qr-page-heading h1 {
+      margin: 0 0 8px;
+      color: #071b3a;
+      font-size: 32px;
+      line-height: 1.08;
+    }
+
+
+    .qr-page-heading p {
+      margin: 0;
+      max-width: 540px;
+      color: #718198;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       PASOS
+    ===================================================== */
+
+    .qr-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 18px;
+      padding: 14px 15px;
+      border: 1px solid #dce8f4;
+      border-radius: 17px;
+      background: #ffffff;
+
+      box-shadow:
+        0 10px 30px
+        rgba(9, 46, 91, .04);
+    }
+
+
+    .qr-step {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: #8593a5;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+
+    .qr-step-number {
+      width: 25px;
+      height: 25px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #edf3f8;
+      color: #718198;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+
+    .qr-step.active {
+      color: #0878e7;
+    }
+
+
+    .qr-step.active .qr-step-number {
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          #0877f9,
+          #08b9c9
+        );
+
+      box-shadow:
+        0 5px 14px
+        rgba(8, 125, 244, .22);
+    }
+
+
+    /* =====================================================
+       TARJETA PRINCIPAL
+    ===================================================== */
+
+    .qr-scanner-card {
+      overflow: hidden;
+      padding: 25px;
+      border: 1px solid #d8e5f1;
+      border-radius: 25px;
+      background: #ffffff;
+
+      box-shadow:
+        0 18px 50px
+        rgba(8, 40, 80, .08);
+    }
+
+
+    .qr-scanner-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 21px;
+    }
+
+
+    .qr-scanner-icon {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      color: #0878f2;
+
+      background:
+        linear-gradient(
+          145deg,
+          #edf7ff,
+          #e8f9fc
+        );
+
+      font-size: 24px;
+    }
+
+
+    .qr-scanner-header h2 {
+      margin: 0 0 4px;
+      color: #071b3a;
+      font-size: 20px;
+    }
+
+
+    .qr-scanner-header p {
+      margin: 0;
+      color: #74859a;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+
+    /* =====================================================
+       ÁREA VISUAL QR
+    ===================================================== */
+
+    .qr-camera-shell {
+      position: relative;
+      width: 100%;
+      min-height: 350px;
+      overflow: hidden;
+      border-radius: 22px;
+      background: #061a38;
+    }
+
+
+    .qr-placeholder {
+      position: relative;
+      width: 100%;
+      min-height: 350px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 35px;
+      color: #ffffff;
+      text-align: center;
+
+      background:
+        radial-gradient(
+          circle at 50% 25%,
+          rgba(10, 183, 205, .28),
+          transparent 34%
+        ),
+        linear-gradient(
+          145deg,
+          #071d43 0%,
+          #083c78 52%,
+          #047fa3 100%
+        );
+    }
+
+
+    .qr-placeholder::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 24px;
+
+      background:
+        rgba(255, 255, 255, .035);
+
+      box-shadow:
+        inset 0 0 0 1px
+        rgba(255, 255, 255, .08);
+    }
+
+
+    .qr-corner {
+      position: absolute;
+      z-index: 3;
+      width: 46px;
+      height: 46px;
+      border-color: #ffffff;
+      border-style: solid;
+      pointer-events: none;
+    }
+
+
+    .qr-corner.top-left {
+      top: calc(50% - 115px);
+      left: calc(50% - 115px);
+      border-width: 4px 0 0 4px;
+      border-radius: 12px 0 0 0;
+    }
+
+
+    .qr-corner.top-right {
+      top: calc(50% - 115px);
+      right: calc(50% - 115px);
+      border-width: 4px 4px 0 0;
+      border-radius: 0 12px 0 0;
+    }
+
+
+    .qr-corner.bottom-left {
+      bottom: calc(50% - 115px);
+      left: calc(50% - 115px);
+      border-width: 0 0 4px 4px;
+      border-radius: 0 0 0 12px;
+    }
+
+
+    .qr-corner.bottom-right {
+      right: calc(50% - 115px);
+      bottom: calc(50% - 115px);
+      border-width: 0 4px 4px 0;
+      border-radius: 0 0 12px 0;
+    }
+
+
+    .qr-placeholder-content {
+      position: relative;
+      z-index: 4;
+      max-width: 210px;
+    }
+
+
+    .qr-placeholder-symbol {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 15px;
+
+      display: grid;
+      place-items: center;
+
+      border:
+        1px solid
+        rgba(255, 255, 255, .18);
+
+      border-radius: 18px;
+
+      background:
+        rgba(255, 255, 255, .10);
+
+      backdrop-filter:
+        blur(8px);
+
+      font-size: 29px;
+    }
+
+
+    .qr-placeholder strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 17px;
+    }
+
+
+    .qr-placeholder small {
+      display: block;
+
+      color:
+        rgba(255, 255, 255, .72);
+
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+
+    /* =====================================================
+       PREVISUALIZACIÓN DE IMAGEN
+    ===================================================== */
+
+    .qr-image-preview {
+      display: none;
+      position: relative;
+      width: 100%;
+      min-height: 350px;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      box-sizing: border-box;
+      background: #071b38;
+    }
+
+
+    .qr-image-preview.visible {
+      display: flex;
+    }
+
+
+    .qr-image-preview img {
+      max-width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 14px;
+
+      box-shadow:
+        0 15px 35px
+        rgba(0, 0, 0, .24);
+    }
+
+
+    .qr-image-preview-badge {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+
+      padding: 7px 10px;
+
+      border-radius: 999px;
+
+      color: #ffffff;
+
+      background:
+        rgba(5, 27, 60, .82);
+
+      backdrop-filter:
+        blur(8px);
+
+      font-size: 9px;
+      font-weight: 900;
+    }
+
+
+    /* =====================================================
+       HTML5 QRCODE
+    ===================================================== */
+
+    #qrReader {
+      width: 100% !important;
+      min-height: 350px;
+      overflow: hidden;
+      border: 0 !important;
+      border-radius: 22px;
+      background: #061a38;
+    }
+
+
+    #qrReader video {
+      width: 100% !important;
+      min-height: 350px;
+      object-fit: cover;
+      border-radius: 22px !important;
+    }
+
+
+    #qrReader__scan_region {
+      min-height: 350px !important;
+      background: #061a38 !important;
+    }
+
+
+    #qrReader__dashboard {
+      display: none !important;
+    }
+
+
+    /* =====================================================
+       ELECCIÓN DEL MÉTODO
+    ===================================================== */
+
+    .qr-method-title {
+      margin: 18px 0 10px;
+      color: #718198;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+
+    .qr-methods {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+    }
+
+
+    .qr-method-button {
+      min-height: 66px;
+
+      display: flex;
+      align-items: center;
+      gap: 11px;
+
+      padding: 11px 14px;
+
+      box-sizing: border-box;
+
+      border-radius: 15px;
+
+      font-family: inherit;
+      text-align: left;
+
+      text-decoration: none;
+
+      cursor: pointer;
+
+      transition:
+        transform .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+    }
+
+
+    .qr-method-button:hover {
+      transform: translateY(-1px);
+    }
+
+
+    .qr-method-button.camera {
+      border: 0;
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          105deg,
+          #0878f8,
+          #09b7c7
+        );
+
+      box-shadow:
+        0 8px 22px
+        rgba(8, 125, 244, .15);
+    }
+
+
+    .qr-method-button.gallery {
+      border: 1px solid #ccdeeb;
+      color: #0b4e7b;
+      background: #f9fcff;
+    }
+
+
+    .qr-method-button.gallery:hover {
+      background: #eff9ff;
+
+      box-shadow:
+        0 8px 20px
+        rgba(8, 79, 130, .08);
+    }
+
+
+    .qr-method-icon {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 12px;
+
+      font-size: 19px;
+    }
+
+
+    .camera .qr-method-icon {
+      background:
+        rgba(255, 255, 255, .16);
+    }
+
+
+    .gallery .qr-method-icon {
+      color: #0879e8;
+      background: #e8f5ff;
+    }
+
+
+    .qr-method-copy strong {
+      display: block;
+      font-size: 12px;
+    }
+
+
+    .qr-method-copy small {
+      display: block;
+      margin-top: 3px;
+      opacity: .76;
+      font-size: 9px;
+      line-height: 1.35;
+    }
+
+
+    .qr-file-help {
+      margin: 9px 0 0;
+      text-align: center;
+      color: #8a98a8;
+      font-size: 9px;
+    }
+
+
+    /* =====================================================
+       RESULTADO
+    ===================================================== */
+
+    .qr-result-card {
+      display: none;
+      margin-top: 17px;
+      padding: 19px;
+      border: 1px solid #a9e8c7;
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #f3fff8,
+          #eafff3
+        );
+
+      box-shadow:
+        0 10px 28px
+        rgba(7, 150, 82, .06);
+    }
+
+
+    .qr-result-card.visible {
+      display: block;
+
+      animation:
+        qrResultAppear
+        .25s ease;
+    }
+
+
+    .qr-result-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #d4efe1;
+      color: #087d47;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+
+    .qr-result-check {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #ffffff;
+      background: #0db267;
+      font-size: 17px;
+
+      box-shadow:
+        0 6px 15px
+        rgba(13, 178, 103, .20);
+    }
+
+
+    .qr-recipient {
+      padding-top: 14px;
+    }
+
+
+    .qr-recipient small {
+      display: block;
+      margin-bottom: 5px;
+      color: #728396;
+      font-size: 11px;
+    }
+
+
+    .qr-recipient strong {
+      display: block;
+      color: #071b3a;
+      font-size: 18px;
+      word-break: break-all;
+    }
+
+
+    .qr-requested-amount {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border: 1px solid #d1ebdf;
+      border-radius: 12px;
+
+      background:
+        rgba(255, 255, 255, .74);
+    }
+
+
+    .qr-requested-amount.visible {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+
+    .qr-requested-amount span {
+      color: #64788b;
+      font-size: 12px;
+    }
+
+
+    .qr-requested-amount strong {
+      color: #087b48;
+      font-size: 15px;
+    }
+
+
+    /* =====================================================
+       MENSAJES
+    ===================================================== */
+
+    .qr-message {
+      min-height: 18px;
+      margin: 13px 0 0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+
+    .qr-message.info {
+      color: #326a96;
+    }
+
+
+    .qr-message.success {
+      color: #07854a;
+    }
+
+
+    .qr-message.error {
+      color: #d43d4b;
+    }
+
+
+    /* =====================================================
+       ACCIONES TRAS ESCANEO
+    ===================================================== */
+
+    .qr-actions {
+      display: grid;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+
+    .qr-primary-button,
+    .qr-secondary-button {
+      width: 100%;
+      min-height: 50px;
+      border-radius: 13px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+
+    .qr-primary-button {
+      border: 0;
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          100deg,
+          #0878f8,
+          #09b7c7
+        );
+    }
+
+
+    .qr-secondary-button {
+      border: 1px solid #cbdce9;
+      color: #154b7c;
+      background: #ffffff;
+    }
+
+
+    /* =====================================================
+       SEGURIDAD
+    ===================================================== */
+
+    .qr-security {
+      display: flex;
+      gap: 9px;
+      margin-top: 17px;
+      padding: 13px 14px;
+      border: 1px solid #dce9f4;
+      border-radius: 14px;
+      background: #f8fbfe;
+      color: #63778d;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+
+    .qr-security strong {
+      color: #08784f;
+    }
+
+
+    /* =====================================================
+       ANIMACIÓN
+    ===================================================== */
+
+    @keyframes qrResultAppear {
+
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+      .qr-page {
+        width: min(100% - 24px, 680px);
+        padding: 24px 0 110px;
+      }
+
+
+      .qr-page-heading h1 {
+        font-size: 27px;
+      }
+
+
+      .qr-scanner-card {
+        padding: 15px;
+        border-radius: 21px;
+      }
+
+
+      .qr-camera-shell,
+      .qr-placeholder,
+      .qr-image-preview,
+      #qrReader,
+      #qrReader video,
+      #qrReader__scan_region {
+        min-height: 320px !important;
+      }
+
+
+      .qr-method-button {
+        min-height: 62px;
+        padding: 9px 11px;
+      }
+
+    }
+
+
+    @media (max-width: 430px) {
+
+      .qr-methods {
+        grid-template-columns: 1fr;
+      }
+
+
+      .qr-method-button {
+        min-height: 58px;
+      }
+
+
+      .qr-step-text {
+        display: none;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body class="app-page">
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header class="app-header">
+
+    <a
+      href="dashboard.html"
+      class="brand"
+    >
+
+      <img
+        src="assets/android-chrome-192x192.png"
+        alt="TikiPay"
+        class="header-logo"
+      >
+
+      <span>
+        TikiPay
+      </span>
+
+    </a>
+
+
+    <a
+      href="dashboard.html"
+      class="icon-button"
+      aria-label="Volver al inicio"
+    >
+      ←
+    </a>
+
+  </header>
+
+
+  <!-- =====================================================
+       CONTENIDO
+  ====================================================== -->
+
+  <main class="qr-page">
+
+
+    <!-- =================================================
+         ENCABEZADO
+    ================================================== -->
+
+    <section class="qr-page-heading">
+
+      <p class="small-label">
+        Pago QR
+      </p>
+
+      <h1>
+        Pagar con QR
+      </h1>
+
+      <p>
+        Escanea un código con la cámara o selecciona
+        una imagen QR guardada en tu dispositivo.
+      </p>
+
+    </section>
+
+
+    <!-- =================================================
+         PASOS
+    ================================================== -->
+
+    <section class="qr-steps">
+
+
+      <div class="qr-step active">
+
+        <span class="qr-step-number">
+          1
+        </span>
+
+        <span class="qr-step-text">
+          Escanear
+        </span>
+
+      </div>
+
+
+      <div class="qr-step">
+
+        <span class="qr-step-number">
+          2
+        </span>
+
+        <span class="qr-step-text">
+          Verificar
+        </span>
+
+      </div>
+
+
+      <div class="qr-step">
+
+        <span class="qr-step-number">
+          3
+        </span>
+
+        <span class="qr-step-text">
+          Pagar
+        </span>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- =================================================
+         TARJETA PRINCIPAL
+    ================================================== -->
+
+    <section class="qr-scanner-card">
+
+
+      <!-- =================================================
+           CABECERA DEL LECTOR
+      ================================================== -->
+
+      <div class="qr-scanner-header">
+
+        <div class="qr-scanner-icon">
+          ▦
+        </div>
+
+
+        <div>
+
+          <h2>
+            Escanear código QR
+          </h2>
+
+          <p>
+            Usa la cámara o selecciona una imagen.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- =================================================
+           ÁREA DE ESCANEO
+      ================================================== -->
+
+      <div class="qr-camera-shell">
+
+
+        <!-- PLACEHOLDER -->
+
+        <div
+          id="qrPlaceholder"
+          class="qr-placeholder"
+        >
+
+          <span
+            class="qr-corner top-left"
+          ></span>
+
+          <span
+            class="qr-corner top-right"
+          ></span>
+
+          <span
+            class="qr-corner bottom-left"
+          ></span>
+
+          <span
+            class="qr-corner bottom-right"
+          ></span>
+
+
+          <div class="qr-placeholder-content">
+
+            <div class="qr-placeholder-symbol">
+              ▦
+            </div>
+
+            <strong>
+              Escanea tu QR
+            </strong>
+
+            <small>
+              Usa la cámara o selecciona una captura
+              guardada en tu dispositivo.
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- CÁMARA -->
+
+        <div
+          id="qrReader"
+          style="display:none;"
+        ></div>
+
+
+        <!-- IMAGEN SELECCIONADA -->
+
+        <div
+          id="qrImagePreview"
+          class="qr-image-preview"
+        >
+
+          <img
+            id="qrPreviewImage"
+            alt="Código QR seleccionado"
+          >
+
+          <span class="qr-image-preview-badge">
+            Imagen seleccionada
+          </span>
+
+        </div>
+
+
+      </div>
+
+
+      <!-- =================================================
+           MÉTODOS DE ESCANEO
+      ================================================== -->
+
+      <p
+        id="qrMethodTitle"
+        class="qr-method-title"
+      >
+        ¿Cómo quieres escanear?
+      </p>
+
+
+      <div
+        id="qrMethods"
+        class="qr-methods"
+      >
+
+
+        <!-- CÁMARA -->
+
+        <button
+          id="startQrScanner"
+          class="qr-method-button camera"
+          type="button"
+        >
+
+          <span class="qr-method-icon">
+            📷
+          </span>
+
+          <span class="qr-method-copy">
+
+            <strong>
+              Usar cámara
+            </strong>
+
+            <small>
+              Escanea un QR físico
+            </small>
+
+          </span>
+
+        </button>
+
+
+        <!-- =================================================
+             GALERÍA
+             IMPORTANTE:
+             Es un LABEL conectado directamente al INPUT.
+             No depende de input.click() mediante JavaScript.
+        ================================================== -->
+
+        <label
+          for="qrImageInput"
+          id="selectQrImageLabel"
+          class="qr-method-button gallery"
+          role="button"
+          tabindex="0"
+        >
+
+          <span class="qr-method-icon">
+            🖼️
+          </span>
+
+          <span class="qr-method-copy">
+
+            <strong>
+              Desde galería
+            </strong>
+
+            <small>
+              Foto o captura de pantalla
+            </small>
+
+          </span>
+
+        </label>
+
+
+      </div>
+
+
+      <!-- =================================================
+           INPUT REAL DE ARCHIVOS
+      ================================================== -->
+
+      <input
+        id="qrImageInput"
+        type="file"
+        accept="image/*"
+        hidden
+      >
+
+
+      <p
+        id="qrFileHelp"
+        class="qr-file-help"
+      >
+        Compatible con JPG, PNG, WEBP y capturas de pantalla.
+      </p>
+
+
+      <!-- =================================================
+           RESULTADO
+      ================================================== -->
+
+      <div
+        id="qrResultCard"
+        class="qr-result-card"
+      >
+
+
+        <div class="qr-result-status">
+
+          <span class="qr-result-check">
+            ✓
+          </span>
+
+          QR TikiPay válido
+
+        </div>
+
+
+        <div class="qr-recipient">
+
+          <small>
+            Destinatario
+          </small>
+
+          <strong id="qrRecipientId">
+            TIKI-
+          </strong>
+
+        </div>
+
+
+        <div
+          id="qrRequestedAmount"
+          class="qr-requested-amount"
+        >
+
+          <span>
+            Monto solicitado
+          </span>
+
+          <strong id="qrAmountValue">
+            Bs 0,00
+          </strong>
+
+        </div>
+
+
+      </div>
+
+
+      <!-- =================================================
+           MENSAJES
+      ================================================== -->
+
+      <p
+        id="qrMessage"
+        class="qr-message"
+        aria-live="polite"
+      ></p>
+
+
+      <!-- =================================================
+           ACCIONES
+      ================================================== -->
+
+      <div class="qr-actions">
+
+
+        <button
+          id="continueQrPayment"
+          class="qr-primary-button"
+          type="button"
+          style="display:none;"
+        >
+          Continuar al pago
+        </button>
+
+
+        <button
+          id="scanAnotherQr"
+          class="qr-secondary-button"
+          type="button"
+          style="display:none;"
+        >
+          Escanear otro QR
+        </button>
+
+
+      </div>
+
+
+      <!-- =================================================
+           SEGURIDAD
+      ================================================== -->
+
+      <div class="qr-security">
+
+        <span>
+          🔒
+        </span>
+
+        <div>
+
+          <strong>
+            Pago seguro TikiPay.
+          </strong>
+
+          TikiPay verifica el código antes de preparar
+          cualquier operación. Escanear una imagen por sí
+          solo no mueve dinero.
+
+        </div>
+
+      </div>
+
+
+    </section>
+
+
+  </main>
+
+
+  <!-- =====================================================
+       NAVEGACIÓN INFERIOR
+  ====================================================== -->
+
+  <nav class="bottom-navigation">
+
+
+    <a
+      href="dashboard.html"
+      class="nav-item"
+    >
+
+      <span>
+        ⌂
+      </span>
+
+      Inicio
+
+    </a>
+
+
+    <a
+      href="movimientos.html"
+      class="nav-item"
+    >
+
+      <span>
+        ⇄
+      </span>
+
+      Movimientos
+
+    </a>
+
+
+    <a
+      href="pagar-qr.html"
+      class="nav-item active"
+    >
+
+      <span>
+        ▦
+      </span>
+
+      Pagar QR
+
+    </a>
+
+
+    <a
+      href="perfil.html"
+      class="nav-item"
+    >
+
+      <span>
+        ○
+      </span>
+
+      Perfil
+
+    </a>
+
+
+  </nav>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
+  <script
+    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+  ></script>
+
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+
+  <script
+    src="js/i18n.js"
+  ></script>
+
+
+  <script
+    src="js/pagar-qr.js"
+  ></script>
+
+
+</body>
+
+</html>
