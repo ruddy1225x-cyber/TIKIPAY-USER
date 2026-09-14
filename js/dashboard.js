@@ -3,12 +3,20 @@
 // Dashboard en tiempo real
 // ======================================================
 
-let dashboardAccount = null;
-let dashboardSession = null;
+let dashboardAccount =
+  null;
 
-let balanceIsHidden = false;
+let dashboardSession =
+  null;
 
-let dashboardRefreshing = false;
+let balanceIsHidden =
+  false;
+
+let dashboardRefreshing =
+  false;
+
+let dashboardEventsBound =
+  false;
 
 
 // ======================================================
@@ -178,9 +186,11 @@ async function refreshDashboardData() {
     }
 
 
-    // IMPORTANTE:
-    // reemplazamos siempre la cuenta anterior
-    // por los datos actuales de Supabase.
+    /*
+      Reemplazamos siempre la cuenta
+      anterior con la información más
+      reciente almacenada en Supabase.
+    */
 
     dashboardAccount =
       account;
@@ -196,7 +206,7 @@ async function refreshDashboardData() {
 
 
     // ==================================================
-    // MOVIMIENTOS + NOTIFICACIONES
+    // ACTIVIDAD + NOTIFICACIONES
     // ==================================================
 
     await Promise.all([
@@ -398,9 +408,16 @@ function renderAccount(
   }
 
 
-  // Primero actualizamos el saldo.
+  // ==================================================
+  // SALDOS
+  // ==================================================
+
   updateBalanceVisibility();
 
+
+  // ==================================================
+  // ESTADO DE CUENTA
+  // ==================================================
 
   const statusElement =
     document.getElementById(
@@ -611,8 +628,14 @@ function formatDashboardMoney(
   const normalized =
     String(
       currency || "BOB"
-    ).toUpperCase();
+    )
+      .trim()
+      .toUpperCase();
 
+
+  // ==================================================
+  // BOLIVIANOS
+  // ==================================================
 
   if (
     normalized ===
@@ -632,7 +655,8 @@ function formatDashboardMoney(
 
 
     return (
-      "Bs " +
+      "Bs "
+      +
       value.toLocaleString(
         "es-BO",
         {
@@ -647,6 +671,37 @@ function formatDashboardMoney(
 
   }
 
+
+  // ==================================================
+  // DÓLARES
+  // ==================================================
+
+  if (
+    normalized ===
+    "USD"
+  ) {
+
+    return (
+      "$ "
+      +
+      value.toLocaleString(
+        "es-BO",
+        {
+          minimumFractionDigits:
+            2,
+
+          maximumFractionDigits:
+            2
+        }
+      )
+    );
+
+  }
+
+
+  // ==================================================
+  // OTRAS MONEDAS
+  // ==================================================
 
   return (
     value.toLocaleString(
@@ -707,7 +762,6 @@ function bindBalanceButton() {
         !balanceIsHidden;
 
 
-      // Guardar preferencia.
       localStorage.setItem(
         "tikipay_hide_balance",
         String(
@@ -725,7 +779,7 @@ function bindBalanceButton() {
 
 
 // ======================================================
-// MOVIMIENTOS RECIENTES
+// ACTIVIDAD RECIENTE
 // ======================================================
 
 async function loadRecentTransactions(
@@ -749,10 +803,13 @@ async function loadRecentTransactions(
         receiver_account_id,
         type,
         amount,
+        fee,
         currency,
         status,
         description,
-        created_at
+        external_reference,
+        created_at,
+        completed_at
       `)
       .or(
         `sender_account_id.eq.${accountId},receiver_account_id.eq.${accountId}`
@@ -760,7 +817,8 @@ async function loadRecentTransactions(
       .order(
         "created_at",
         {
-          ascending: false
+          ascending:
+            false
         }
       )
       .limit(5);
@@ -790,7 +848,7 @@ async function loadRecentTransactions(
 
 
   // ==================================================
-  // SIN MOVIMIENTOS
+  // SIN ACTIVIDAD
   // ==================================================
 
   if (
@@ -802,13 +860,17 @@ async function loadRecentTransactions(
 
       <div class="empty-state">
 
-        <p>
-          Sin movimientos
-        </p>
+        <div class="empty-icon">
+          ⇄
+        </div>
 
-        <small>
+        <h3>
+          Sin movimientos
+        </h3>
+
+        <p>
           Tus últimas operaciones aparecerán aquí.
-        </small>
+        </p>
 
       </div>
 
@@ -825,7 +887,7 @@ async function loadRecentTransactions(
 
 
   // ==================================================
-  // MOVIMIENTOS
+  // MOSTRAR ÚLTIMOS MOVIMIENTOS
   // ==================================================
 
   data.forEach(
@@ -835,6 +897,33 @@ async function loadRecentTransactions(
         isIncomingTransaction(
           transaction,
           accountId
+        );
+
+
+      const title =
+        dashboardTransactionTitle(
+          transaction,
+          incoming
+        );
+
+
+      const concept =
+        dashboardTransactionDescription(
+          transaction,
+          title
+        );
+
+
+      const icon =
+        dashboardTransactionIcon(
+          transaction.type,
+          incoming
+        );
+
+
+      const status =
+        dashboardTransactionStatus(
+          transaction.status
         );
 
 
@@ -854,13 +943,9 @@ async function loadRecentTransactions(
 
           <div class="transaction-icon">
 
-            ${
-              incoming
-                ?
-                "↓"
-                :
-                "↑"
-            }
+            ${escapeDashboardHTML(
+              icon
+            )}
 
           </div>
 
@@ -870,23 +955,83 @@ async function loadRecentTransactions(
             <strong>
 
               ${escapeDashboardHTML(
-                transaction.description
-                ||
-                transactionLabel(
-                  transaction.type
-                )
+                title
               )}
 
             </strong>
 
 
-            <small>
+            ${
+              concept
+                ?
+                `
+                  <small
+                    style="
+                      display:block;
+                      margin-top:3px;
+                      color:#64748b;
+                    "
+                  >
 
-              ${formatDashboardDate(
-                transaction.created_at
+                    ${escapeDashboardHTML(
+                      concept
+                    )}
+
+                  </small>
+                `
+                :
+                ""
+            }
+
+
+            <small
+              style="
+                display:block;
+                margin-top:3px;
+              "
+            >
+
+              ${escapeDashboardHTML(
+                formatDashboardDate(
+                  transaction.created_at
+                )
               )}
 
             </small>
+
+
+            ${
+              status
+                ?
+                `
+                  <small
+                    style="
+                      display:inline-block;
+                      margin-top:5px;
+                      font-weight:700;
+                      color:${
+                        String(
+                          transaction.status ||
+                          ""
+                        ).toUpperCase() ===
+                        "COMPLETED"
+                          ?
+                          "#059669"
+                          :
+                          "#64748b"
+                      };
+                    "
+                  >
+
+                    ${escapeDashboardHTML(
+                      status
+                    )}
+
+                  </small>
+                `
+                :
+                ""
+            }
 
           </div>
 
@@ -914,9 +1059,11 @@ async function loadRecentTransactions(
               "-"
           }
 
-          ${formatDashboardMoney(
-            transaction.amount,
-            transaction.currency
+          ${escapeDashboardHTML(
+            formatDashboardMoney(
+              transaction.amount,
+              transaction.currency
+            )
           )}
 
         </strong>
@@ -943,7 +1090,23 @@ function isIncomingTransaction(
   accountId
 ) {
 
-  // Transferencia recibida
+  if (
+    !transaction ||
+    !accountId
+  ) {
+
+    return false;
+
+  }
+
+
+  /*
+    Regla principal:
+
+    si la cuenta actual es la receptora,
+    entonces el movimiento es una entrada.
+  */
+
   if (
     transaction.receiver_account_id ===
     accountId
@@ -954,21 +1117,326 @@ function isIncomingTransaction(
   }
 
 
-  // Depósitos / créditos
+  /*
+    Compatibilidad con operaciones
+    administrativas o históricas donde
+    eventualmente receiver_account_id
+    pudiera no estar informado.
+  */
+
+  const type =
+    String(
+      transaction.type ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+
   if (
-    transaction.type ===
+    type ===
       "DEPOSIT"
     ||
-    transaction.type ===
+    type ===
       "ADMIN_CREDIT"
   ) {
 
-    return true;
+    if (
+      transaction.sender_account_id !==
+      accountId
+    ) {
+
+      return true;
+
+    }
 
   }
 
 
   return false;
+
+}
+
+
+// ======================================================
+// TÍTULO DEL MOVIMIENTO
+// ======================================================
+
+function dashboardTransactionTitle(
+  transaction,
+  incoming
+) {
+
+  const type =
+    String(
+      transaction?.type ||
+      ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  switch (type) {
+
+
+    // ==================================================
+    // TRANSFERENCIA
+    // ==================================================
+
+    case "TRANSFER":
+
+      return incoming
+        ?
+        "Transferencia recibida"
+        :
+        "Transferencia enviada";
+
+
+    // ==================================================
+    // PAGO QR
+    // ==================================================
+
+    case "QR_PAYMENT":
+
+      return incoming
+        ?
+        "Pago QR recibido"
+        :
+        "Pago QR realizado";
+
+
+    // ==================================================
+    // SERVICIOS
+    // ==================================================
+
+    case "SERVICE_PAYMENT":
+
+      return incoming
+        ?
+        "Pago de servicio recibido"
+        :
+        "Pago de servicio";
+
+
+    // ==================================================
+    // CRÉDITO
+    // ==================================================
+
+    case "ADMIN_CREDIT":
+
+      return "Crédito TikiPay";
+
+
+    // ==================================================
+    // DÉBITO ADMINISTRATIVO
+    // ==================================================
+
+    case "ADMIN_DEBIT":
+
+      return "Ajuste administrativo";
+
+
+    // ==================================================
+    // DEPÓSITO
+    // ==================================================
+
+    case "DEPOSIT":
+
+      return "Depósito";
+
+
+    // ==================================================
+    // RETIRO
+    // ==================================================
+
+    case "WITHDRAWAL":
+
+      return "Retiro";
+
+
+    default:
+
+      return transactionLabel(
+        type
+      );
+
+  }
+
+}
+
+
+// ======================================================
+// CONCEPTO / DESCRIPCIÓN
+// ======================================================
+
+function dashboardTransactionDescription(
+  transaction,
+  title
+) {
+
+  const description =
+    String(
+      transaction?.description ||
+      ""
+    ).trim();
+
+
+  if (!description) {
+    return "";
+  }
+
+
+  /*
+    Si el concepto es exactamente igual
+    al título, no lo mostramos dos veces.
+  */
+
+  if (
+    description
+      .toLowerCase()
+    ===
+    String(
+      title || ""
+    )
+      .trim()
+      .toLowerCase()
+  ) {
+
+    return "";
+
+  }
+
+
+  return description;
+
+}
+
+
+// ======================================================
+// ICONO SEGÚN TIPO
+// ======================================================
+
+function dashboardTransactionIcon(
+  type,
+  incoming
+) {
+
+  const normalizedType =
+    String(
+      type || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  switch (
+    normalizedType
+  ) {
+
+
+    case "QR_PAYMENT":
+
+      return "▦";
+
+
+    case "SERVICE_PAYMENT":
+
+      return "◈";
+
+
+    case "ADMIN_CREDIT":
+
+      return "🎁";
+
+
+    case "ADMIN_DEBIT":
+
+      return "⚙";
+
+
+    case "DEPOSIT":
+
+      return "↓";
+
+
+    case "WITHDRAWAL":
+
+      return "↑";
+
+
+    case "TRANSFER":
+
+      return incoming
+        ?
+        "↓"
+        :
+        "↑";
+
+
+    default:
+
+      return incoming
+        ?
+        "↓"
+        :
+        "↑";
+
+  }
+
+}
+
+
+// ======================================================
+// ESTADO DE TRANSACCIÓN
+// ======================================================
+
+function dashboardTransactionStatus(
+  status
+) {
+
+  const normalized =
+    String(
+      status || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
+  const values = {
+
+    PENDING:
+      "Pendiente",
+
+    PROCESSING:
+      "Procesando",
+
+    COMPLETED:
+      "Completado",
+
+    FAILED:
+      "Fallido",
+
+    CANCELLED:
+      "Cancelado",
+
+    UNDER_REVIEW:
+      "En revisión",
+
+    FROZEN:
+      "Congelado"
+
+  };
+
+
+  return (
+    values[
+      normalized
+    ]
+    ||
+    normalized
+    ||
+    ""
+  );
 
 }
 
@@ -1036,7 +1504,9 @@ async function loadNotificationCount(
 
 
   if (
-    Number(count) >
+    Number(
+      count
+    ) >
     0
   ) {
 
@@ -1053,6 +1523,7 @@ async function loadNotificationCount(
     badge.classList.add(
       "visible"
     );
+
 
   } else {
 
@@ -1077,19 +1548,30 @@ function transactionLabel(
   type
 ) {
 
+  const normalizedType =
+    String(
+      type || ""
+    )
+      .trim()
+      .toUpperCase();
+
+
   const labels = {
 
     TRANSFER:
       "Transferencia",
 
+    QR_PAYMENT:
+      "Pago QR",
+
     SERVICE_PAYMENT:
       "Pago de servicio",
 
     ADMIN_CREDIT:
-      "Crédito",
+      "Crédito TikiPay",
 
     ADMIN_DEBIT:
-      "Ajuste",
+      "Ajuste administrativo",
 
     DEPOSIT:
       "Depósito",
@@ -1101,7 +1583,9 @@ function transactionLabel(
 
 
   return (
-    labels[type]
+    labels[
+      normalizedType
+    ]
     ||
     "Movimiento"
   );
@@ -1117,6 +1601,11 @@ function formatDashboardDate(
   value
 ) {
 
+  if (!value) {
+    return "";
+  }
+
+
   if (
     typeof formatTikiDate ===
     "function"
@@ -1131,11 +1620,27 @@ function formatDashboardDate(
 
   try {
 
-    return new Date(
-      value
-    ).toLocaleString(
+    const date =
+      new Date(
+        value
+      );
+
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      return "";
+
+    }
+
+
+    return date.toLocaleString(
       "es-BO"
     );
+
 
   } catch {
 
@@ -1196,10 +1701,6 @@ function escapeDashboardHTML(
 // ======================================================
 // EVENTOS DE ACTUALIZACIÓN AUTOMÁTICA
 // ======================================================
-
-let dashboardEventsBound =
-  false;
-
 
 function bindDashboardRefreshEvents() {
 
