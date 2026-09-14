@@ -11,10 +11,477 @@ let tikiNotifications =
 
 
 // ======================================================
+// SONIDO TIKIPAY - NUEVA NOTIFICACIÓN
+// ======================================================
+
+const TIKIPAY_NOTIFICATION_SOUND =
+  "/assets/sounds/tikipay-notificacion.mp3";
+
+let notificationAudio =
+  null;
+
+let notificationAudioUnlocked =
+  false;
+
+let notificationAudioUnlockPromise =
+  null;
+
+let notificationRealtimeChannel =
+  null;
+
+
+function getNotificationAudio() {
+
+  if (!notificationAudio) {
+
+    notificationAudio =
+      new Audio(
+        TIKIPAY_NOTIFICATION_SOUND
+      );
+
+
+    notificationAudio.preload =
+      "auto";
+
+
+    notificationAudio.volume =
+      0.95;
+
+  }
+
+
+  return notificationAudio;
+
+}
+
+
+function preloadNotificationAudio() {
+
+  try {
+
+    const audio =
+      getNotificationAudio();
+
+
+    audio.load();
+
+  } catch (error) {
+
+    console.warn(
+      "No se pudo precargar el sonido de notificación TikiPay:",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+  Los navegadores móviles pueden bloquear audio
+  que se reproduce desde eventos en tiempo real.
+
+  Por eso preparamos el mismo elemento de audio
+  durante la primera interacción del usuario.
+*/
+function unlockNotificationAudio() {
+
+  if (
+    notificationAudioUnlocked ||
+    notificationAudioUnlockPromise
+  ) {
+
+    return notificationAudioUnlockPromise;
+
+  }
+
+
+  try {
+
+    const audio =
+      getNotificationAudio();
+
+
+    const previousVolume =
+      audio.volume;
+
+
+    audio.pause();
+
+    audio.currentTime =
+      0;
+
+
+    audio.volume =
+      0;
+
+
+    const playPromise =
+      audio.play();
+
+
+    if (
+      playPromise &&
+      typeof playPromise.then ===
+        "function"
+    ) {
+
+      notificationAudioUnlockPromise =
+        playPromise
+          .then(
+            function () {
+
+              audio.pause();
+
+              audio.currentTime =
+                0;
+
+
+              audio.volume =
+                previousVolume;
+
+
+              notificationAudioUnlocked =
+                true;
+
+            }
+          )
+          .catch(
+            function (error) {
+
+              audio.pause();
+
+              audio.currentTime =
+                0;
+
+
+              audio.volume =
+                previousVolume;
+
+
+              notificationAudioUnlockPromise =
+                null;
+
+
+              console.debug(
+                "El navegador aún no habilitó el sonido de notificación TikiPay:",
+                error
+              );
+
+            }
+          );
+
+
+      return notificationAudioUnlockPromise;
+
+    }
+
+
+    audio.pause();
+
+    audio.currentTime =
+      0;
+
+
+    audio.volume =
+      previousVolume;
+
+
+    notificationAudioUnlocked =
+      true;
+
+
+    return null;
+
+  } catch (error) {
+
+    console.debug(
+      "No se pudo preparar el sonido de notificación TikiPay:",
+      error
+    );
+
+
+    return null;
+
+  }
+
+}
+
+
+async function playNotificationSound() {
+
+  try {
+
+    if (notificationAudioUnlockPromise) {
+
+      try {
+
+        await notificationAudioUnlockPromise;
+
+      } catch (error) {
+
+        // Si falla el desbloqueo silencioso,
+        // intentamos reproducir normalmente.
+
+      }
+
+    }
+
+
+    const audio =
+      getNotificationAudio();
+
+
+    audio.pause();
+
+    audio.currentTime =
+      0;
+
+
+    audio.volume =
+      0.95;
+
+
+    await audio.play();
+
+  } catch (error) {
+
+    /*
+      El sonido es complementario.
+      Nunca debe impedir que la notificación
+      aparezca correctamente.
+    */
+
+    console.warn(
+      "Llegó una notificación, pero el navegador no pudo reproducir el sonido TikiPay:",
+      error
+    );
+
+  }
+
+}
+
+
+document.addEventListener(
+  "pointerdown",
+  unlockNotificationAudio,
+  {
+    passive:
+      true
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  unlockNotificationAudio
+);
+
+
+// ======================================================
+// NOTIFICACIONES EN TIEMPO REAL
+// ======================================================
+
+function subscribeToRealtimeNotifications() {
+
+  if (
+    !notificationSession?.user?.id
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !supabaseClient ||
+    typeof supabaseClient.channel !==
+      "function"
+  ) {
+
+    console.warn(
+      "Supabase Realtime no está disponible en este cliente."
+    );
+
+    return;
+
+  }
+
+
+  if (notificationRealtimeChannel) {
+
+    try {
+
+      supabaseClient.removeChannel(
+        notificationRealtimeChannel
+      );
+
+    } catch (error) {
+
+      console.debug(
+        "No se pudo cerrar el canal anterior de notificaciones:",
+        error
+      );
+
+    }
+
+
+    notificationRealtimeChannel =
+      null;
+
+  }
+
+
+  const currentUserId =
+    notificationSession.user.id;
+
+
+  notificationRealtimeChannel =
+    supabaseClient
+      .channel(
+        `tikipay-notifications-${currentUserId}`
+      )
+      .on(
+        "postgres_changes",
+        {
+          event:
+            "INSERT",
+
+          schema:
+            "public",
+
+          table:
+            "notifications",
+
+          filter:
+            `user_id=eq.${currentUserId}`
+        },
+        function (
+          payload
+        ) {
+
+          handleRealtimeNotification(
+            payload?.new
+          );
+
+        }
+      )
+      .subscribe(
+        function (
+          status
+        ) {
+
+          if (
+            status ===
+            "CHANNEL_ERROR"
+          ) {
+
+            console.warn(
+              "No se pudo activar el canal en tiempo real de notificaciones TikiPay."
+            );
+
+          }
+
+        }
+      );
+
+}
+
+
+function handleRealtimeNotification(
+  notification
+) {
+
+  if (
+    !notification ||
+    !notification.id
+  ) {
+
+    return;
+
+  }
+
+
+  const alreadyExists =
+    tikiNotifications.some(
+      item =>
+        item.id ===
+        notification.id
+    );
+
+
+  if (alreadyExists) {
+
+    return;
+
+  }
+
+
+  tikiNotifications.unshift(
+    notification
+  );
+
+
+  renderNotifications(
+    tikiNotifications
+  );
+
+
+  updateMarkAllButton();
+
+
+  playNotificationSound();
+
+}
+
+
+function closeRealtimeNotifications() {
+
+  if (
+    !notificationRealtimeChannel
+  ) {
+
+    return;
+
+  }
+
+
+  try {
+
+    supabaseClient.removeChannel(
+      notificationRealtimeChannel
+    );
+
+  } catch (error) {
+
+    console.debug(
+      "No se pudo cerrar el canal de notificaciones TikiPay:",
+      error
+    );
+
+  }
+
+
+  notificationRealtimeChannel =
+    null;
+
+}
+
+
+window.addEventListener(
+  "pagehide",
+  closeRealtimeNotifications
+);
+
+
+// ======================================================
 // INICIO
 // ======================================================
 
 async function initNotifications() {
+
+  preloadNotificationAudio();
+
 
   notificationSession =
     await requireAuth();
@@ -26,6 +493,9 @@ async function initNotifications() {
 
 
   await loadNotifications();
+
+
+  subscribeToRealtimeNotifications();
 
 }
 

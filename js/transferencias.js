@@ -7,8 +7,208 @@ let transferSession = null;
 let transferAccount = null;
 let pendingTransfer = null;
 
+
 let qrPaymentMode = false;
 let qrPaymentContext = null;
+
+
+// ======================================================
+// SONIDO TIKIPAY - OPERACIÓN EXITOSA
+// Transferencia normal + Pago QR
+// ======================================================
+
+const TIKIPAY_TRANSFER_SUCCESS_SOUND =
+  "/assets/sounds/tikipay-transferencia-tiki.mp3";
+
+let transferSuccessAudio = null;
+let transferSuccessAudioUnlocked = false;
+let transferSuccessUnlockPromise = null;
+
+
+function getTransferSuccessAudio() {
+  if (!transferSuccessAudio) {
+    transferSuccessAudio =
+      new Audio(
+        TIKIPAY_TRANSFER_SUCCESS_SOUND
+      );
+
+    transferSuccessAudio.preload =
+      "auto";
+
+    transferSuccessAudio.volume =
+      0.95;
+  }
+
+  return transferSuccessAudio;
+}
+
+
+function preloadTransferSuccessAudio() {
+  try {
+    const audio =
+      getTransferSuccessAudio();
+
+    audio.load();
+  } catch (error) {
+    console.warn(
+      "No se pudo precargar el sonido TikiPay:",
+      error
+    );
+  }
+}
+
+
+/*
+  Algunos navegadores móviles bloquean audio
+  iniciado después de una operación asíncrona.
+
+  Esta función prepara el audio durante la
+  primera interacción real del usuario, sin
+  reproducir un sonido audible.
+*/
+function unlockTransferSuccessAudio() {
+  if (
+    transferSuccessAudioUnlocked ||
+    transferSuccessUnlockPromise
+  ) {
+    return transferSuccessUnlockPromise;
+  }
+
+  try {
+    const audio =
+      getTransferSuccessAudio();
+
+    const previousVolume =
+      audio.volume;
+
+    audio.pause();
+    audio.currentTime =
+      0;
+
+    audio.volume =
+      0;
+
+    const playPromise =
+      audio.play();
+
+    if (
+      playPromise &&
+      typeof playPromise.then ===
+        "function"
+    ) {
+      transferSuccessUnlockPromise =
+        playPromise
+          .then(
+            function () {
+              audio.pause();
+
+              audio.currentTime =
+                0;
+
+              audio.volume =
+                previousVolume;
+
+              transferSuccessAudioUnlocked =
+                true;
+            }
+          )
+          .catch(
+            function (error) {
+              audio.pause();
+
+              audio.currentTime =
+                0;
+
+              audio.volume =
+                previousVolume;
+
+              transferSuccessUnlockPromise =
+                null;
+
+              console.debug(
+                "El navegador aún no habilitó el audio TikiPay:",
+                error
+              );
+            }
+          );
+
+      return transferSuccessUnlockPromise;
+    }
+
+    audio.pause();
+
+    audio.currentTime =
+      0;
+
+    audio.volume =
+      previousVolume;
+
+    transferSuccessAudioUnlocked =
+      true;
+
+    return null;
+  } catch (error) {
+    console.debug(
+      "No se pudo preparar el sonido TikiPay:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+async function playTransferSuccessSound() {
+  try {
+    if (transferSuccessUnlockPromise) {
+      try {
+        await transferSuccessUnlockPromise;
+      } catch (error) {
+        // Si falla el desbloqueo silencioso,
+        // intentamos reproducir normalmente.
+      }
+    }
+
+    const audio =
+      getTransferSuccessAudio();
+
+    audio.pause();
+
+    audio.currentTime =
+      0;
+
+    audio.volume =
+      0.95;
+
+    await audio.play();
+  } catch (error) {
+    /*
+      El sonido es complementario.
+      Nunca debe afectar una transferencia
+      o un pago QR que ya fue exitoso.
+    */
+    console.warn(
+      "La operación fue exitosa, pero no se pudo reproducir el sonido TikiPay:",
+      error
+    );
+  }
+}
+
+
+document.addEventListener(
+  "pointerdown",
+  unlockTransferSuccessAudio,
+  {
+    passive:
+      true
+  }
+);
+
+
+document.addEventListener(
+  "keydown",
+  unlockTransferSuccessAudio
+);
 
 
 // ======================================================
@@ -17,6 +217,8 @@ let qrPaymentContext = null;
 
 async function initTransfers() {
   try {
+    preloadTransferSuccessAudio();
+
     transferSession = await requireAuth();
 
     if (!transferSession) return;
@@ -27,7 +229,10 @@ async function initTransfers() {
 
     await initializeQrPaymentMode();
   } catch (error) {
-    console.error("Error iniciando transferencias:", error);
+    console.error(
+      "Error iniciando transferencias:",
+      error
+    );
 
     showTransferMessage(
       "No se pudo iniciar el módulo de transferencias.",
@@ -42,20 +247,27 @@ async function initTransfers() {
 // ======================================================
 
 async function loadTransferAccount() {
-  const { data, error } = await supabaseClient
-    .from("accounts")
-    .select(`
-      id,
-      currency,
-      available_balance,
-      frozen_balance,
-      status
-    `)
-    .eq("user_id", transferSession.user.id)
-    .single();
+  const { data, error } =
+    await supabaseClient
+      .from("accounts")
+      .select(`
+        id,
+        currency,
+        available_balance,
+        frozen_balance,
+        status
+      `)
+      .eq(
+        "user_id",
+        transferSession.user.id
+      )
+      .single();
 
   if (error || !data) {
-    console.error("Error cargando cuenta:", error);
+    console.error(
+      "Error cargando cuenta:",
+      error
+    );
 
     showTransferMessage(
       "No se pudo cargar la cuenta.",
@@ -65,7 +277,8 @@ async function loadTransferAccount() {
     return;
   }
 
-  transferAccount = data;
+  transferAccount =
+    data;
 
   renderTransferBalance();
   validateAccountStatus();
@@ -113,7 +326,7 @@ function validateAccountStatus() {
 
   if (
     transferAccount.status ===
-    "ACTIVE"
+      "ACTIVE"
   ) {
     if (button) {
       button.disabled =
@@ -147,13 +360,15 @@ async function initializeQrPaymentMode() {
 
   const source =
     String(
-      params.get("source") || ""
+      params.get("source") ||
+        ""
     )
       .trim()
       .toLowerCase();
 
   if (
-    source !== "qr"
+    source !==
+      "qr"
   ) {
     qrPaymentMode =
       false;
@@ -266,7 +481,8 @@ async function loadSecureQrPayment(
 
     if (
       !data ||
-      data.ok !== true
+      data.ok !==
+        true
     ) {
       invalidateQrPayment(
         secureQrErrorMessage(
@@ -279,7 +495,8 @@ async function loadSecureQrPayment(
 
     const tikiId =
       String(
-        data.tiki_id || ""
+        data.tiki_id ||
+          ""
       )
         .trim()
         .toUpperCase();
@@ -314,7 +531,7 @@ async function loadSecureQrPayment(
       recipient_name:
         String(
           data.full_name ||
-          "Usuario TikiPay"
+            "Usuario TikiPay"
         ).trim(),
 
       amount,
@@ -325,7 +542,7 @@ async function loadSecureQrPayment(
       currency:
         String(
           data.currency ||
-          "BOB"
+            "BOB"
         )
           .trim()
           .toUpperCase(),
@@ -333,7 +550,7 @@ async function loadSecureQrPayment(
       description:
         String(
           data.description ||
-          ""
+            ""
         )
           .trim()
           .slice(
@@ -410,7 +627,7 @@ function loadLegacyQrPayment(
     recipient_name:
       String(
         data?.recipient_name ||
-        ""
+          ""
       ).trim(),
 
     amount:
@@ -424,7 +641,7 @@ function loadLegacyQrPayment(
     currency:
       String(
         data?.currency ||
-        "BOB"
+          "BOB"
       )
         .trim()
         .toUpperCase(),
@@ -432,7 +649,7 @@ function loadLegacyQrPayment(
     description:
       String(
         data?.description ||
-        "Pago mediante QR TikiPay"
+          "Pago mediante QR TikiPay"
       )
         .trim()
         .slice(
@@ -576,7 +793,7 @@ function populateQrTransferForm() {
     const currentDescription =
       String(
         descriptionInput.value ||
-        ""
+          ""
       ).trim();
 
     /*
@@ -799,7 +1016,7 @@ document
 
       if (
         transferAccount.status !==
-        "ACTIVE"
+          "ACTIVE"
       ) {
         showTransferMessage(
           "Tu cuenta no puede realizar operaciones actualmente.",
@@ -832,7 +1049,7 @@ document
       const typedRecipient =
         String(
           recipientInput?.value ||
-          ""
+            ""
         ).trim();
 
       const typedAmount =
@@ -842,7 +1059,7 @@ document
       const typedDescription =
         String(
           descriptionInput?.value ||
-          ""
+            ""
         ).trim();
 
 
@@ -1045,7 +1262,7 @@ async function refreshSecureQrContext() {
     const verifiedRecipient =
       String(
         data.tiki_id ||
-        ""
+          ""
       )
         .trim()
         .toUpperCase();
@@ -1068,7 +1285,7 @@ async function refreshSecureQrContext() {
     qrPaymentContext.recipient_name =
       String(
         data.full_name ||
-        "Usuario TikiPay"
+          "Usuario TikiPay"
       ).trim();
 
     qrPaymentContext.amount =
@@ -1095,7 +1312,7 @@ async function refreshSecureQrContext() {
     qrPaymentContext.currency =
       String(
         data.currency ||
-        "BOB"
+          "BOB"
       )
         .trim()
         .toUpperCase();
@@ -1429,6 +1646,19 @@ document
 function handleTransferSuccess(
   result
 ) {
+  /*
+    Este punto solo se ejecuta después de que
+    Supabase confirmó que la operación terminó
+    sin error.
+
+    El mismo sonido se utiliza para:
+
+    - Transferencia TikiPay
+    - Pago mediante QR TikiPay
+  */
+
+  playTransferSuccessSound();
+
   if (!result) {
     showTransferMessage(
       qrPaymentMode
@@ -1662,7 +1892,7 @@ document
     ) {
       if (
         event.target ===
-        this
+          this
       ) {
         closeTransferModal();
       }
@@ -1681,7 +1911,7 @@ document.addEventListener(
   ) {
     if (
       event.key ===
-      "Escape"
+        "Escape"
     ) {
       closeTransferModal();
     }
@@ -1699,7 +1929,7 @@ function secureQrErrorMessage(
   const code =
     String(
       result?.error ||
-      ""
+        ""
     )
       .trim()
       .toUpperCase();
@@ -1935,7 +2165,7 @@ function isValidTikiId(
   ).test(
     String(
       value ||
-      ""
+        ""
     )
       .trim()
       .toUpperCase()
@@ -2088,24 +2318,24 @@ function formatTransferMoney(
   const value =
     Number(
       amount ||
-      0
+        0
     );
 
   const normalizedCurrency =
     String(
       currency ||
-      "BOB"
+        "BOB"
     )
       .trim()
       .toUpperCase();
 
   if (
     normalizedCurrency ===
-    "BOB"
+      "BOB"
   ) {
     if (
       typeof formatBOB ===
-      "function"
+        "function"
     ) {
       return formatBOB(
         value
