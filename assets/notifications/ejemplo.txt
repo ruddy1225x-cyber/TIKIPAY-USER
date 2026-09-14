@@ -5,3 +5,5 @@ assets/notifications/
 ├── mantenimiento.png
 ├── seguridad.png
 └── novedades.png
+	
+1200 x 1600
