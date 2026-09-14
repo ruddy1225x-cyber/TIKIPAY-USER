@@ -1,16 +1,820 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Movimientos | TikiPay</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <link rel="icon" href="assets/favicon.ico">
-  <link rel="stylesheet" href="css/style.css">
+  <title>
+    Movimientos | TikiPay
+  </title>
+
+  <link
+    rel="icon"
+    href="assets/favicon.ico"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
+
+  <style>
+
+    /* ==================================================
+       MOVIMIENTOS
+    ================================================== */
+
+    .movements-page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 30px 20px 120px;
+    }
+
+
+    .page-heading {
+      margin-bottom: 24px;
+    }
+
+
+    .page-heading h1 {
+      margin: 4px 0 6px;
+      color: #0f172a;
+      font-size: 30px;
+    }
+
+
+    .page-description {
+      margin: 0;
+      color: #64748b;
+      font-size: 14px;
+    }
+
+
+    /* ==================================================
+       FILTROS
+    ================================================== */
+
+    .filters-card {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1fr)
+        210px;
+      gap: 12px;
+
+      padding: 16px;
+      margin-bottom: 18px;
+
+      background: #ffffff;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius: 18px;
+
+      box-shadow:
+        0 8px 30px
+        rgba(
+          15,
+          23,
+          42,
+          0.04
+        );
+    }
+
+
+    .filters-card input,
+    .filters-card select {
+      width: 100%;
+      min-height: 46px;
+
+      padding:
+        0
+        14px;
+
+      border:
+        1px solid
+        #cbd5e1;
+
+      border-radius:
+        12px;
+
+      background:
+        #ffffff;
+
+      color:
+        #0f172a;
+
+      font-size:
+        14px;
+
+      outline:
+        none;
+
+      transition:
+        0.2s ease;
+    }
+
+
+    .filters-card input:focus,
+    .filters-card select:focus {
+      border-color:
+        #0ea5e9;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          14,
+          165,
+          233,
+          0.10
+        );
+    }
+
+
+    /* ==================================================
+       RESUMEN
+    ================================================== */
+
+    .movement-summary {
+      display: grid;
+
+      grid-template-columns:
+        1fr
+        1fr;
+
+      gap: 14px;
+
+      margin-bottom:
+        20px;
+    }
+
+
+    .summary-card {
+      padding:
+        18px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius:
+        18px;
+
+      box-shadow:
+        0 8px 30px
+        rgba(
+          15,
+          23,
+          42,
+          0.04
+        );
+    }
+
+
+    .summary-card span {
+      display:
+        block;
+
+      margin-bottom:
+        6px;
+
+      color:
+        #64748b;
+
+      font-size:
+        13px;
+    }
+
+
+    .summary-card strong {
+      display:
+        block;
+
+      font-size:
+        23px;
+
+      font-weight:
+        900;
+    }
+
+
+    /* ==================================================
+       LISTA
+    ================================================== */
+
+    .transactions-page-list {
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      gap:
+        12px;
+    }
+
+
+    .movement-card {
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        18px;
+
+      padding:
+        18px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius:
+        18px;
+
+      box-shadow:
+        0 8px 30px
+        rgba(
+          15,
+          23,
+          42,
+          0.04
+        );
+
+      transition:
+        0.2s ease;
+    }
+
+
+    .movement-card:hover {
+      transform:
+        translateY(-1px);
+
+      box-shadow:
+        0 12px 34px
+        rgba(
+          15,
+          23,
+          42,
+          0.07
+        );
+    }
+
+
+    .movement-left {
+      display:
+        flex;
+
+      align-items:
+        flex-start;
+
+      gap:
+        14px;
+
+      min-width:
+        0;
+
+      flex:
+        1;
+    }
+
+
+    .movement-icon {
+      width:
+        46px;
+
+      height:
+        46px;
+
+      min-width:
+        46px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      border-radius:
+        14px;
+
+      background:
+        #eff6ff;
+
+      color:
+        #0369a1;
+
+      font-size:
+        20px;
+
+      font-weight:
+        800;
+    }
+
+
+    .movement-icon.incoming {
+      background:
+        #ecfdf5;
+
+      color:
+        #059669;
+    }
+
+
+    .movement-icon.outgoing {
+      background:
+        #eff6ff;
+
+      color:
+        #0284c7;
+    }
+
+
+    .movement-info {
+      min-width:
+        0;
+    }
+
+
+    .movement-info h3 {
+      margin:
+        0;
+
+      color:
+        #0f172a;
+
+      font-size:
+        15px;
+
+      font-weight:
+        800;
+
+      line-height:
+        1.35;
+    }
+
+
+    .movement-description {
+      margin:
+        5px 0
+        6px;
+
+      color:
+        #475569;
+
+      font-size:
+        13px;
+
+      line-height:
+        1.45;
+
+      overflow-wrap:
+        anywhere;
+    }
+
+
+    .movement-date {
+      display:
+        block;
+
+      margin-top:
+        4px;
+
+      color:
+        #94a3b8;
+
+      font-size:
+        11px;
+    }
+
+
+    .movement-meta {
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      align-items:
+        center;
+
+      gap:
+        7px;
+
+      margin-top:
+        9px;
+    }
+
+
+    .movement-direction {
+      padding:
+        4px
+        8px;
+
+      border-radius:
+        999px;
+
+      background:
+        #f8fafc;
+
+      color:
+        #64748b;
+
+      font-size:
+        10px;
+
+      font-weight:
+        700;
+    }
+
+
+    .movement-status {
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      padding:
+        4px
+        8px;
+
+      border-radius:
+        999px;
+
+      font-size:
+        10px;
+
+      font-weight:
+        800;
+    }
+
+
+    .status-completed {
+      background:
+        #dcfce7;
+
+      color:
+        #166534;
+    }
+
+
+    .status-pending {
+      background:
+        #fef3c7;
+
+      color:
+        #92400e;
+    }
+
+
+    .status-processing {
+      background:
+        #e0f2fe;
+
+      color:
+        #075985;
+    }
+
+
+    .status-failed,
+    .status-cancelled {
+      background:
+        #fee2e2;
+
+      color:
+        #991b1b;
+    }
+
+
+    .status-under-review {
+      background:
+        #f3e8ff;
+
+      color:
+        #6b21a8;
+    }
+
+
+    .status-frozen {
+      background:
+        #e2e8f0;
+
+      color:
+        #475569;
+    }
+
+
+    /* ==================================================
+       VALOR
+    ================================================== */
+
+    .movement-value {
+      min-width:
+        115px;
+
+      text-align:
+        right;
+
+      font-size:
+        16px;
+
+      font-weight:
+        900;
+
+      white-space:
+        nowrap;
+    }
+
+
+    .income-text {
+      color:
+        #059669;
+    }
+
+
+    .expense-text {
+      color:
+        #dc2626;
+    }
+
+
+    /* ==================================================
+       VACÍO
+    ================================================== */
+
+    .empty-state {
+      padding:
+        54px
+        20px;
+
+      background:
+        #ffffff;
+
+      border:
+        1px solid
+        #dbe5f0;
+
+      border-radius:
+        20px;
+
+      text-align:
+        center;
+    }
+
+
+    .empty-icon {
+      width:
+        64px;
+
+      height:
+        64px;
+
+      margin:
+        0 auto
+        14px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      border-radius:
+        20px;
+
+      background:
+        #f0f9ff;
+
+      color:
+        #0284c7;
+
+      font-size:
+        28px;
+    }
+
+
+    .empty-state h3 {
+      margin:
+        0 0
+        7px;
+
+      color:
+        #0f172a;
+    }
+
+
+    .empty-state p {
+      margin:
+        0;
+
+      color:
+        #64748b;
+
+      font-size:
+        14px;
+    }
+
+
+    /* ==================================================
+       MENSAJE
+    ================================================== */
+
+    .movements-message {
+      margin:
+        16px 0
+        0;
+
+      text-align:
+        center;
+
+      font-size:
+        13px;
+    }
+
+
+    .movements-message.error {
+      color:
+        #dc2626;
+    }
+
+
+    .movements-message.success {
+      color:
+        #059669;
+    }
+
+
+    /* ==================================================
+       MÓVIL
+    ================================================== */
+
+    @media (
+      max-width:
+      650px
+    ) {
+
+      .movements-page {
+        padding:
+          24px
+          16px
+          110px;
+      }
+
+
+      .page-heading h1 {
+        font-size:
+          26px;
+      }
+
+
+      .filters-card {
+        grid-template-columns:
+          1fr;
+      }
+
+
+      .movement-summary {
+        grid-template-columns:
+          1fr
+          1fr;
+
+        gap:
+          10px;
+      }
+
+
+      .summary-card {
+        padding:
+          15px;
+      }
+
+
+      .summary-card strong {
+        font-size:
+          18px;
+      }
+
+
+      .movement-card {
+        align-items:
+          flex-start;
+
+        padding:
+          15px;
+
+        gap:
+          10px;
+      }
+
+
+      .movement-left {
+        gap:
+          10px;
+      }
+
+
+      .movement-icon {
+        width:
+          40px;
+
+        height:
+          40px;
+
+        min-width:
+          40px;
+
+        border-radius:
+          12px;
+
+        font-size:
+          17px;
+      }
+
+
+      .movement-info h3 {
+        font-size:
+          14px;
+      }
+
+
+      .movement-description {
+        font-size:
+          12px;
+      }
+
+
+      .movement-value {
+        min-width:
+          auto;
+
+        font-size:
+          14px;
+      }
+
+    }
+
+
+    @media (
+      max-width:
+      430px
+    ) {
+
+      .movement-card {
+        flex-direction:
+          column;
+      }
+
+
+      .movement-value {
+        width:
+          100%;
+
+        padding-left:
+          50px;
+
+        text-align:
+          left;
+      }
+
+    }
+
+  </style>
+
 </head>
 
+
 <body class="app-page">
+
+
+  <!-- ==================================================
+       HEADER
+  =================================================== -->
 
   <header class="app-header">
 
@@ -35,16 +839,24 @@
     <a
       href="perfil.html"
       class="profile-button"
+      aria-label="Abrir perfil"
     >
+
       <span id="profileInitial">
         T
       </span>
+
     </a>
 
   </header>
 
 
-  <main class="dashboard-container">
+  <!-- ==================================================
+       CONTENIDO
+  =================================================== -->
+
+  <main class="movements-page">
+
 
     <section class="page-heading">
 
@@ -63,16 +875,25 @@
     </section>
 
 
+    <!-- ==================================================
+         FILTROS
+    =================================================== -->
+
     <section class="filters-card">
 
       <input
         type="search"
         id="transactionSearch"
         placeholder="Buscar movimiento..."
+        autocomplete="off"
+        aria-label="Buscar movimiento"
       >
 
 
-      <select id="transactionFilter">
+      <select
+        id="transactionFilter"
+        aria-label="Filtrar movimientos"
+      >
 
         <option value="ALL">
           Todos
@@ -80,6 +901,10 @@
 
         <option value="TRANSFER">
           Transferencias
+        </option>
+
+        <option value="QR_PAYMENT">
+          Pagos QR
         </option>
 
         <option value="SERVICE_PAYMENT">
@@ -106,6 +931,10 @@
 
     </section>
 
+
+    <!-- ==================================================
+         RESUMEN
+    =================================================== -->
 
     <section class="movement-summary">
 
@@ -143,6 +972,10 @@
     </section>
 
 
+    <!-- ==================================================
+         LISTA DE MOVIMIENTOS
+    =================================================== -->
+
     <section
       id="transactionsList"
       class="transactions-page-list"
@@ -155,19 +988,30 @@
         </div>
 
         <h3>
-          Sin movimientos
+          Cargando movimientos...
         </h3>
 
         <p>
-          Tus operaciones aparecerán aquí.
+          Espera un momento.
         </p>
 
       </div>
 
     </section>
 
+
+    <p
+      id="movementsMessage"
+      class="movements-message"
+    ></p>
+
+
   </main>
 
+
+  <!-- ==================================================
+       NAVEGACIÓN
+  =================================================== -->
 
   <nav class="bottom-navigation">
 
@@ -206,9 +1050,23 @@
   </nav>
 
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/movimientos.js"></script>
+  <!-- ==================================================
+       JAVASCRIPT
+  =================================================== -->
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
+
+  <script
+    src="js/supabase.js"
+  ></script>
+
+  <script
+    src="js/movimientos.js"
+  ></script>
+
 
 </body>
+
 </html>
