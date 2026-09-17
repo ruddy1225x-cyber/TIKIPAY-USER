@@ -19,9 +19,22 @@
     href="assets/favicon.ico"
   >
 
+  <!-- ==================================================
+       ESTILOS GENERALES
+  =================================================== -->
+
   <link
     rel="stylesheet"
     href="css/style.css"
+  >
+
+  <!-- ==================================================
+       TEMAS AUTOMÁTICOS TIKIPAY
+  =================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="css/themes.css"
   >
 
 </head>
@@ -124,7 +137,10 @@
          SALDO
     =================================================== -->
 
-    <section class="balance-card">
+    <section
+      class="balance-card"
+      data-tikipay-balance-card
+    >
 
       <div class="balance-top">
 
@@ -619,16 +635,28 @@
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
   ></script>
 
+
   <script
     src="js/supabase.js"
   ></script>
+
 
   <script
     src="js/i18n.js"
   ></script>
 
+
   <script
     src="js/dashboard.js"
+  ></script>
+
+
+  <!-- ==================================================
+       TEMAS AUTOMÁTICOS
+  =================================================== -->
+
+  <script
+    src="js/theme.js"
   ></script>
 
 
